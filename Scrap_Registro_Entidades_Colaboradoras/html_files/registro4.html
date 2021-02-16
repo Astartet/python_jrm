@@ -1,0 +1,719 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Registro de Entidades Colaboradoras</title>
+<link rel="stylesheet" type="text/css" href="include/css/jquery.dataTables.css">
+<!-- jQuery -->
+<script type="text/javascript" charset="utf8" src="include/js/jquery.js"></script>
+  
+<!-- DataTables -->
+<script type="text/javascript" charset="utf8" src="include/js/jquery.dataTables.min.js"></script>
+<!-- <script type="text/javascript" src="./include/js/datosSucursales.js"></script> -->
+<script type="text/javascript" charset="utf8" src="./include/js/listados.js"></script>
+<script type="text/javascript">
+$(document).ready( function () {
+    $(document).on("keypress", "form", function(event) { 
+        if (event.keyCode == 13) {
+            $('#filt').click();
+            return false;
+        }
+    });
+    
+    $('#filt').click(function(event) {
+        var NOMBREvar = $('#NOMBRE').val();
+        var LINEAvar = $('#LINEA').val();
+        var COMOvar = $('#COMO').val();
+        var CATEGvar = $('#CATEG').val();
+        var PROVvar = $('#PROV').val();
+        var TIPOLvar = $('#TIPOL').val();
+        var LOCALvar = $('#LOCALIDAD').val();
+        var ACTvar = $('#ACT').val();
+        var cadena = NOMBREvar + LINEAvar + COMOvar + CATEGvar + PROVvar + TIPOLvar + LOCALvar + ACTvar;
+
+        if (cadena == "") {
+            alert ("Introduce criterios de búsqueda");
+        } else if (NOMBREvar.length > 0 && NOMBREvar.length < 2) {
+            alert ("Introduce al menos 2 caracteres para buscar por nombre comercial");
+        } else {
+            //la linea de abajo es nomenclatura JavaScript
+            //document.getElementById('cuerpo').innerHTML="<tr><td></td><TD></TD><TD></TD><td></td><td></td><td></td><td></td><td></td><td></td><td><center><img src='images/loader.gif' HEIGHT=80></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+            //la linea de abajo es nomenclatura JQuery
+            $('#cuerpo').html("<tr><td></td><td></td><td></td><td></td><td><center><img src='include/img/loader.gif' HEIGHT=80></td><td></td><td></td><td></td><td></td><td></td></tr>");
+            //document.getElementById('eSpera').innerHTML ="<center><img src='images/loader.gif' HEIGHT=80></center>";
+  
+  		    // Si en vez de por post lo queremos hacer por get, cambiamos el $.post por $.get
+			$.post('AjaxServlet', {
+				NOMBRE : NOMBREvar,
+				LINEA : LINEAvar,
+				COMO : COMOvar,
+				CATEG : CATEGvar,
+				PROV : PROVvar,
+				TIPOL : TIPOLvar,
+				LOCALIDAD : LOCALvar,
+				ACT : ACTvar,
+				ACCION:"FILTRAR"
+			}, function(responseText) {
+				ertable.destroy();
+				
+				$('#cuerpo').html(responseText);
+				//laTable.ajax.reload();
+				ertable=$('#lAtAbla').DataTable({
+					"language": {
+						"sLengthMenu": "Mostrar _MENU_ registros por página",
+						"sZeroRecords": "Sin registros",
+						"sInfo": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+						"sInfoEmtpy": "Mostrando de 0 a 0 de 0 registros",
+						"infoEmpty": "Mostrando de 0 a 0 de 0 registros",
+						"sInfoFiltered": "(filtrado de _MAX_ total registros)",
+						"paginate": {
+					        "first":      "Primero",
+					        "last":       "Último",
+					        "next":       "Siguiente",
+					        "previous":   "Anterior"
+					    },
+					    "search":         "Búsqueda:"
+					}
+				});
+				//document.getElementById('eSpera').innerHTML ="";
+			});
+		}
+	});
+    
+    $('#exportar').click(function(event){
+        //$('#cuerpo').html("<tr><td></td><TD></TD><TD></TD><td></td><td></td><td></td><td></td><td></td><td></td><td><center><img src='images/loader.gif' HEIGHT=80></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>");
+        var NOMBREvar = $('#NOMBRE').val();
+        var LINEAvar = $('#LINEA').val();
+        var COMOvar = $('#COMO').val();
+        var CATEGvar = $('#CATEG').val();
+        var PROVvar = $('#PROV').val();
+        var TIPOLvar = $('#TIPOL').val();
+        var LOCALvar = $('#LOCALIDAD').val();
+        var ACTvar = $('#ACT').val();
+        var cadena=NOMBREvar + LINEAvar + COMOvar + CATEGvar + PROVvar + TIPOLvar + LOCALvar + ACTvar;
+        if (cadena == "") {
+            $('#cuerpo').html("");
+            alert ("Introduce criterios de búsqueda");
+            //document.getElementById('eSpera').innerHTML ="";
+        } else {
+            // Si en vez de por post lo queremos hacer por get, cambiamos el $.post por $.get
+			/* $.post('AjaxServlet', {
+				DNI: DNIvar,
+				NOMBRE : NOMBREvar,
+				APLL1: APLL1var,
+				APLL2: APLL2var,
+				CIF: CIFvar,
+				EMPRESA: EMPRESAvar,
+				ACCION:"EXPORTAR"
+			}); */
+			document.formFilt.action="AjaxServlet";
+			document.formFilt.submit();
+			
+			}
+		 //$('#cuerpo').html("<tr><td></td><TD></TD><TD></TD><td></td><td></td><td></td><td></td><td></td><td></td><td><center>Resultados exportados</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>");
+    });
+    
+    var ertable=$('#lAtAbla').DataTable({
+        "language": {
+            "sLengthMenu"   : "Mostrar _MENU_ registros por página",
+            "sZeroRecords"  : "Sin registros",
+            "sInfo"         : "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "sInfoEmtpy"    : "Mostrando de 0 a 0 de 0 registros",
+            "infoEmpty"     : "Mostrando de 0 a 0 de 0 registros",
+            "sInfoFiltered" : "(filtrado de _MAX_ total registros)",
+            "paginate": {
+                "first"     : "Primero",
+                "last"      : "Último",
+                "next"      : "Siguiente",
+                "previous"  : "Anterior"
+            },
+            "search"        : "Búsqueda:"
+        }
+    });
+});
+
+function cargaDiv(urls,ids){
+	//$(id).load(url);
+	//$(ids).load(urls);
+	window.open(urls);
+	//document.getElementById('DetallePg').load('Detalle.html');
+}
+</script>
+
+</head>
+<body style="font-size:100%;">
+<center>
+<img src="include/img/cabecera.jpg" border="1" width="75%" style="vertical-align: top;">
+</center>
+
+<center><h3><i><u>REGISTRO DE ENTIDADES COLABORADORAS</u></i></h3><br>
+<!-- <div id="eSpera" style="overflow:auto;align:center; padding:20px;"></div> -->
+Conoce las entidades colaboradoras en el listado de abajo, las cuales puede filtrar por distintos campos que se muestran a continuación.</center>
+<div id="form" "="" style="text-align: center;background-color:#eeeeee;">
+<form name="formFilt" action="" method="POST">
+<hr>
+<b>Filtros Entidades Colaboradoras:</b>
+<center>
+<table width="800">
+<tbody><tr>
+<td align="center" width="200px">Nombre Comercial/Razón Social:</td>
+<td align="right" width="200px"><input type="text" name="NOMBRE" value="" id="NOMBRE" style="width: 200px;"></td>
+<td align="center" width="200px">Línea:</td>
+<td align="right" width="200px">
+	 <select name="LINEA" value="" id="LINEA" onchange="javascript:cargarCategoriaLista(document.getElementById('LINEA'));" style="width: 200px;">
+	<!--<select name="LINEA" value="" id="LINEA" style="width: 200px;">-->
+	<option value="">--Selecciona Línea--</option>
+				<option value="CONSTRUCCIÓN SOSTENIBLE">CONSTRUCCIÓN SOSTENIBLE</option><option value="PYME SOSTENIBLE">PYME SOSTENIBLE</option><option value="REDES INTELIGENTES">REDES INTELIGENTES</option>
+	</select>
+</td>
+</tr>
+<tr>
+<td align="center" width="200px">Cómo interviene:</td>
+<td align="right" width="200px"><select name="COMO" value="" id="COMO" style="width: 200px;">
+<option value="">--Selecciona Valor--</option>
+<option value="C_T_ACTIVIDAD_AUDITORIA">Elaboración del certificado previo y posterior a la ejecución</option>
+<option value="C_T_ACTIVIDAD_SUMINISTRA">Suministro de bienes o prestación de servicios incentivables</option>
+<option value="C_T_ACTIVIDAD_EJECUTORA">Ejecución material de las actuaciones incentivables</option>
+<option value="C_T_ACTIVIDAD_PREST_SERV_ENERG">Prestación de servicios energéticos en el ámbito de las categorías C de conceptos incentivables</option>
+</select></td>
+<td align="center" width="200px">Categoría:</td>
+<td align="right" width="200px">
+<div id="div_Categ2"><select style="width: 200px;" id="CATEG" name="CATEG" onchange="javascript:cargarTipologiaLista(document.getElementById('CATEG'));">
+
+
+<option value="">--Selecciona Categoria--</option><option value="A.1. Aprovechamiento eficiente de recursos autóctonos o residuales">A.1. Aprovechamiento eficiente de recursos autóctonos o residuales</option><option value="A.2. Mejora de la eficiencia energética y mayor contribución a la protección ambiental">A.2. Mejora de la eficiencia energética y mayor contribución a la protección ambiental</option><option value="B. Procesos o soluciones inteligentes para la evaluación y la gestión energética">B. Procesos o soluciones inteligentes para la evaluación y la gestión energética</option><option value="C. Actuaciones de mejora energética en los procesos a través de servicios energéticos">C. Actuaciones de mejora energética en los procesos a través de servicios energéticos</option></select></div>
+</td>
+</tr>
+<tr>
+<td align="center" width="200px">Provincia:</td>
+<td align="right" width="200px">
+<div id="div_Prov2">
+<select name="PROV" value="" id="PROV" onchange="javascript:cargarMuniLista(document.getElementById('PROV'));" style="width: 200px;">
+<!-- <select name="PROV" value="" id="PROV" style="width: 200px;"> -->
+<option value="">--Selecciona Provincia--</option>
+				<option value="ALAVA">ALAVA</option><option value="ALBACETE">ALBACETE</option><option value="ALICANTE">ALICANTE</option><option value="ALMERÍA">ALMERÍA</option><option value="ASTURIAS">ASTURIAS</option><option value="BADAJOZ">BADAJOZ</option><option value="BALEARES">BALEARES</option><option value="BARCELONA">BARCELONA</option><option value="BURGOS">BURGOS</option><option value="CACERES">CACERES</option><option value="CÁDIZ">CÁDIZ</option><option value="CANTABRIA">CANTABRIA</option><option value="CASTELLON">CASTELLON</option><option value="CIUDAD REAL">CIUDAD REAL</option><option value="CÓRDOBA">CÓRDOBA</option><option value="CORUÑA (LA)">CORUÑA (LA)</option><option value="CUENCA">CUENCA</option><option value="GERONA">GERONA</option><option value="GRANADA">GRANADA</option><option value="GUADALAJARA">GUADALAJARA</option><option value="GUIPUZCOA">GUIPUZCOA</option><option value="HUELVA">HUELVA</option><option value="JAÉN">JAÉN</option><option value="LUGO">LUGO</option><option value="MADRID">MADRID</option><option value="MALAGA">MALAGA</option><option value="MURCIA">MURCIA</option><option value="NAVARRA">NAVARRA</option><option value="PALMAS (LAS)">PALMAS (LAS)</option><option value="PONTEVEDRA">PONTEVEDRA</option><option value="RIOJA (LA)">RIOJA (LA)</option><option value="SALAMANCA">SALAMANCA</option><option value="SEGOVIA">SEGOVIA</option><option value="SEVILLA">SEVILLA</option><option value="TARRAGONA">TARRAGONA</option><option value="TOLEDO">TOLEDO</option><option value="VALENCIA">VALENCIA</option><option value="VALLADOLID">VALLADOLID</option><option value="VIZCAYA">VIZCAYA</option><option value="ZARAGOZA">ZARAGOZA</option>
+</select>
+</div>
+</td>
+<td align="center" width="200px">Tipología:</td>
+<td align="right" width="200px">
+	<div id="div_Tip2">
+	<select name="TIPOL" value="" id="TIPOL" onchange="javascript:cargarActuacionesLista(document.getElementById('TIPOL'));" style="width: 200px;">
+	<option value="">--Selecciona Tipología--</option>
+				<option value="A.1.1. Generación de energía mediante el aprovechamiento de energías renovables">A.1.1. Generación de energía mediante el aprovechamiento de energías renovables</option><option value="A.1.1. Soluciones tradicionales para el aislamiento en cerramientos, cubiertas o suelo.">A.1.1. Soluciones tradicionales para el aislamiento en cerramientos, cubiertas o suelo.</option><option value="A.1.2. Desarrollo de la cadena de la biomasa, mediante proyectos de producción y/o logística de la biomasa y biocombustibles.">A.1.2. Desarrollo de la cadena de la biomasa, mediante proyectos de producción y/o logística de la biomasa y biocombustibles.</option><option value="A.1.2. Disposición de ventanas o huecos acristalados térmicamente eficientes ">A.1.2. Disposición de ventanas o huecos acristalados térmicamente eficientes </option><option value="A.1.3. Aprovechamiento de energía residual">A.1.3. Aprovechamiento de energía residual</option><option value="A.1.3. Medidas de protección solar o sombreado ">A.1.3. Medidas de protección solar o sombreado </option><option value="A.2. Aprovechamiento de la luz natural y su combinación con iluminación artificial en proyectos de arquitectura de la luz">A.2. Aprovechamiento de la luz natural y su combinación con iluminación artificial en proyectos de arquitectura de la luz</option><option value="A.2.1. Reformas de instalaciones o procesos para la mayor eficiencia energética">A.2.1. Reformas de instalaciones o procesos para la mayor eficiencia energética</option><option value="A.2.2. Mejora de las cogeneraciones existentes y promoción de la cogeneración de alta eficiencia">A.2.2. Mejora de las cogeneraciones existentes y promoción de la cogeneración de alta eficiencia</option><option value="A.2.3. Sustitución de combustibles o energías tradicionales por otros menos contaminantes.">A.2.3. Sustitución de combustibles o energías tradicionales por otros menos contaminantes.</option><option value="A.3. Soluciones bioclimáticas o con alto valor añadido">A.3. Soluciones bioclimáticas o con alto valor añadido</option><option value="A.4.1. Sistemas energéticamente eficientes para la generación de calor">A.4.1. Sistemas energéticamente eficientes para la generación de calor</option><option value="A.4.2. Sistemas para la generación de electricidad o la cogeneración de calor y electricidad">A.4.2. Sistemas para la generación de electricidad o la cogeneración de calor y electricidad</option><option value="A.5.1.Reforma energética en la climatización, ventilación o refrigeración usada en edificios">A.5.1.Reforma energética en la climatización, ventilación o refrigeración usada en edificios</option><option value="A.5.2. Reforma energética en instalaciones de agua en los edificios y los servicios públicos">A.5.2. Reforma energética en instalaciones de agua en los edificios y los servicios públicos</option><option value="A.6.1. Iluminación interior
+">A.6.1. Iluminación interior
+</option><option value="A.6.2. Iluminación exterior y del paisaje">A.6.2. Iluminación exterior y del paisaje</option><option value="B. Procesos o soluciones inteligentes para la evaluación y la gestión energética">B. Procesos o soluciones inteligentes para la evaluación y la gestión energética</option><option value="B. Procesos o soluciones inteligentes para la evaluación y la gestión energética de los edificios y las ciudades
+">B. Procesos o soluciones inteligentes para la evaluación y la gestión energética de los edificios y las ciudades
+</option><option value="B.1.1. Instalaciones para el suministro de combustibles alternativos
+">B.1.1. Instalaciones para el suministro de combustibles alternativos
+</option><option value="B.1.2. Aprovechamiento de energías renovables para la movilidad sostenible
+">B.1.2. Aprovechamiento de energías renovables para la movilidad sostenible
+</option><option value="B.2.1. Adquisición o transformación de vehículos energéticamente eficientes">B.2.1. Adquisición o transformación de vehículos energéticamente eficientes</option><option value="C. Actuaciones de mejora energética en edificios e instalaciones a través de servicios energéticos">C. Actuaciones de mejora energética en edificios e instalaciones a través de servicios energéticos</option><option value="C. Actuaciones de mejora energética en los procesos a través de servicios energéticos">C. Actuaciones de mejora energética en los procesos a través de servicios energéticos</option><option value="C. Actuaciones para la descarbonización del transporte a través de servicios energéticos">C. Actuaciones para la descarbonización del transporte a través de servicios energéticos</option>
+	</select>
+	</div>
+</td>
+</tr>
+<tr>
+<td align="center" width="200px">Localidad:</td>
+<td align="right" width="200px">
+<div id="div_municipio2">
+<select name="LOCALIDAD" value="" id="LOCALIDAD" onchange="javascript:cargarProvLista(document.getElementById('LOCALIDAD'));" style="width: 200px;">
+<option value="">--Selecciona Municipio--</option>
+				<option value="ABLA">ABLA</option><option value="ABRERA">ABRERA</option><option value="ADAMUZ">ADAMUZ</option><option value="ADRA">ADRA</option><option value="AGUADULCE">AGUADULCE</option><option value="AGUILAR DE LA FRONTERA">AGUILAR DE LA FRONTERA</option><option value="ALAMEDA">ALAMEDA</option><option value="ALBACETE">ALBACETE</option><option value="ALBAIDA DEL ALJARAFE">ALBAIDA DEL ALJARAFE</option><option value="ALBOLOTE">ALBOLOTE</option><option value="ALBOX">ALBOX</option><option value="ALBUÑÁN">ALBUÑÁN</option><option value="ALBUÑOL">ALBUÑOL</option><option value="ALCALÁ DE GUADAÍRA">ALCALÁ DE GUADAÍRA</option><option value="ALCALÁ DE HENARES">ALCALÁ DE HENARES</option><option value="ALCALÁ DE LOS GAZULES">ALCALÁ DE LOS GAZULES</option><option value="ALCALÁ DEL RÍO">ALCALÁ DEL RÍO</option><option value="ALCALÁ DEL VALLE">ALCALÁ DEL VALLE</option><option value="ALCALÁ LA REAL">ALCALÁ LA REAL</option><option value="ALCANTARILLA">ALCANTARILLA</option><option value="ALCÀSSER">ALCÀSSER</option><option value="ALCAUDETE">ALCAUDETE</option><option value="ALCÁZAR DE SAN JUAN">ALCÁZAR DE SAN JUAN</option><option value="ALCOBENDAS">ALCOBENDAS</option><option value="ALCOLEA">ALCOLEA</option><option value="ALCOLEA DEL RÍO">ALCOLEA DEL RÍO</option><option value="ALCÓNTAR">ALCÓNTAR</option><option value="ALCORCÓN">ALCORCÓN</option><option value="ALDEACENTENERA">ALDEACENTENERA</option><option value="ALFACAR">ALFACAR</option><option value="ALGABA, LA">ALGABA, LA</option><option value="ALGÁMITAS">ALGÁMITAS</option><option value="ALGAR">ALGAR</option><option value="ALGECIRAS">ALGECIRAS</option><option value="ALGODONALES">ALGODONALES</option><option value="ALHAMA DE ALMERÍA">ALHAMA DE ALMERÍA</option><option value="ALHAMA DE GRANADA">ALHAMA DE GRANADA</option><option value="ALHAURÍN DE LA TORRE">ALHAURÍN DE LA TORRE</option><option value="ALHAURÍN EL GRANDE">ALHAURÍN EL GRANDE</option><option value="ALHENDÍN">ALHENDÍN</option><option value="ALICANTE/ALACANT">ALICANTE/ALACANT</option><option value="ALICÚN DE ORTEGA">ALICÚN DE ORTEGA</option><option value="ALJARAQUE">ALJARAQUE</option><option value="ALMADÉN DE LA PLATA">ALMADÉN DE LA PLATA</option><option value="ALMANSA">ALMANSA</option><option value="ALMARGEN">ALMARGEN</option><option value="ALMEDINILLA">ALMEDINILLA</option><option value="ALMENDRALEJO">ALMENDRALEJO</option><option value="ALMENSILLA">ALMENSILLA</option><option value="ALMERÍA">ALMERÍA</option><option value="ALMODÓVAR DEL RÍO">ALMODÓVAR DEL RÍO</option><option value="ALMOGÍA">ALMOGÍA</option><option value="ALMONASTER LA REAL">ALMONASTER LA REAL</option><option value="ALMONTE">ALMONTE</option><option value="ALMUÑÉCAR">ALMUÑÉCAR</option><option value="ÁLORA">ÁLORA</option><option value="ALOSNO">ALOSNO</option><option value="ALQUIFE">ALQUIFE</option><option value="ALZIRA">ALZIRA</option><option value="ANDÚJAR">ANDÚJAR</option><option value="ANTAS">ANTAS</option><option value="ANTEQUERA">ANTEQUERA</option><option value="AÑORA">AÑORA</option><option value="ARACENA">ARACENA</option><option value="ARAHAL">ARAHAL</option><option value="ARBOLEAS">ARBOLEAS</option><option value="ARCHIDONA">ARCHIDONA</option><option value="ARCOS DE LA FRONTERA">ARCOS DE LA FRONTERA</option><option value="ARDALES">ARDALES</option><option value="ARENAS DEL REY">ARENAS DEL REY</option><option value="ARGANDA DEL REY">ARGANDA DEL REY</option><option value="ARJONA">ARJONA</option><option value="ARJONILLA">ARJONILLA</option><option value="ARMILLA">ARMILLA</option><option value="AROCHE">AROCHE</option><option value="ARRIATE">ARRIATE</option><option value="ARROYO DEL OJANCO">ARROYO DEL OJANCO</option><option value="ARROYOMOLINOS DE LEÓN">ARROYOMOLINOS DE LEÓN</option><option value="ATARFE">ATARFE</option><option value="AYAMONTE">AYAMONTE</option><option value="AZNALCÁZAR">AZNALCÁZAR</option><option value="AZUTÁN">AZUTÁN</option><option value="BADAJOZ">BADAJOZ</option><option value="BADALONA">BADALONA</option><option value="BAENA">BAENA</option><option value="BAEZA">BAEZA</option><option value="BAILÉN">BAILÉN</option><option value="BALANEGRA">BALANEGRA</option><option value="BAÑOS DE LA ENCINA">BAÑOS DE LA ENCINA</option><option value="BARAKALDO">BARAKALDO</option><option value="BARBATE">BARBATE</option><option value="BARBERÀ DEL VALLÈS">BARBERÀ DEL VALLÈS</option><option value="BARCELONA">BARCELONA</option><option value="BARRIOS, LOS">BARRIOS, LOS</option><option value="BARRO">BARRO</option><option value="BAZA">BAZA</option><option value="BEAS DE GRANADA">BEAS DE GRANADA</option><option value="BEAS DE SEGURA">BEAS DE SEGURA</option><option value="BEDMAR Y GARCÍEZ">BEDMAR Y GARCÍEZ</option><option value="BEGÍJAR">BEGÍJAR</option><option value="BELALCÁZAR">BELALCÁZAR</option><option value="BELMEZ">BELMEZ</option><option value="BENACAZÓN">BENACAZÓN</option><option value="BENAHADUX">BENAHADUX</option><option value="BENALMÁDENA">BENALMÁDENA</option><option value="BENALÚA">BENALÚA</option><option value="BENALUP-CASAS VIEJAS">BENALUP-CASAS VIEJAS</option><option value="BENAMAUREL">BENAMAUREL</option><option value="BENAMEJÍ">BENAMEJÍ</option><option value="BENAOJÁN">BENAOJÁN</option><option value="BENATAE">BENATAE</option><option value="BERJA">BERJA</option><option value="BIENSERVIDA">BIENSERVIDA</option><option value="BIENVENIDA">BIENVENIDA</option><option value="BOADILLA DEL MONTE">BOADILLA DEL MONTE</option><option value="BOLLULLOS DE LA MITACIÓN">BOLLULLOS DE LA MITACIÓN</option><option value="BOLLULLOS PAR DEL CONDADO">BOLLULLOS PAR DEL CONDADO</option><option value="BONARES">BONARES</option><option value="BORMUJOS">BORMUJOS</option><option value="BORNOS">BORNOS</option><option value="BOSQUE, EL">BOSQUE, EL</option><option value="BRENES">BRENES</option><option value="BRUNETE">BRUNETE</option><option value="BUJALANCE">BUJALANCE</option><option value="BURGUILLOS">BURGUILLOS</option><option value="CABEZAS DE SAN JUAN, LAS">CABEZAS DE SAN JUAN, LAS</option><option value="CABRA">CABRA</option><option value="CÁCERES">CÁCERES</option><option value="CÁDIAR">CÁDIAR</option><option value="CÁDIZ">CÁDIZ</option><option value="CÁJAR">CÁJAR</option><option value="CALAÑAS">CALAÑAS</option><option value="CALICASAS">CALICASAS</option><option value="CAMARMA DE ESTERUELAS">CAMARMA DE ESTERUELAS</option><option value="CAMAS">CAMAS</option><option value="CAMBIL">CAMBIL</option><option value="CAMPANA, LA">CAMPANA, LA</option><option value="CAMPILLO DE ARENAS">CAMPILLO DE ARENAS</option><option value="CAMPILLOS">CAMPILLOS</option><option value="CAMPLLONG">CAMPLLONG</option><option value="CANILES">CANILES</option><option value="CANJÁYAR">CANJÁYAR</option><option value="CANTILLANA">CANTILLANA</option><option value="CANTORIA">CANTORIA</option><option value="CAÑADA ROSAL">CAÑADA ROSAL</option><option value="CÁÑAR">CÁÑAR</option><option value="CAÑETE DE LAS TORRES">CAÑETE DE LAS TORRES</option><option value="CAÑETE LA REAL">CAÑETE LA REAL</option><option value="CARAVACA DE LA CRUZ">CARAVACA DE LA CRUZ</option><option value="CARBONERAS">CARBONERAS</option><option value="CARCABUEY">CARCABUEY</option><option value="CÁRCHELES">CÁRCHELES</option><option value="CARLOTA, LA">CARLOTA, LA</option><option value="CARMONA">CARMONA</option><option value="CAROLINA, LA">CAROLINA, LA</option><option value="CARPIO, EL">CARPIO, EL</option><option value="CÁRTAMA">CÁRTAMA</option><option value="CARTAYA">CARTAYA</option><option value="CASARABONELA">CASARABONELA</option><option value="CASARES">CASARES</option><option value="CASARICHE">CASARICHE</option><option value="CASPE">CASPE</option><option value="CASTELLAR DE LA FRONTERA">CASTELLAR DE LA FRONTERA</option><option value="CASTELLÓN DE LA PLANA">CASTELLÓN DE LA PLANA</option><option value="CASTILLEJA DE LA CUESTA">CASTILLEJA DE LA CUESTA</option><option value="CASTILLO DE LOCUBÍN">CASTILLO DE LOCUBÍN</option><option value="CASTRIL">CASTRIL</option><option value="CASTRO DEL RÍO">CASTRO DEL RÍO</option><option value="CAZALLA DE LA SIERRA">CAZALLA DE LA SIERRA</option><option value="CAZORLA">CAZORLA</option><option value="CENES DE LA VEGA">CENES DE LA VEGA</option><option value="CHAUCHINA">CHAUCHINA</option><option value="CHICLANA DE LA FRONTERA">CHICLANA DE LA FRONTERA</option><option value="CHICLANA DE SEGURA">CHICLANA DE SEGURA</option><option value="CHIPIONA">CHIPIONA</option><option value="CHIRIVEL">CHIRIVEL</option><option value="CHUCENA">CHUCENA</option><option value="CHURRIANA DE LA VEGA">CHURRIANA DE LA VEGA</option><option value="CIJUELA">CIJUELA</option><option value="CIUDAD REAL">CIUDAD REAL</option><option value="CIUDAD RODRIGO">CIUDAD RODRIGO</option><option value="COGOLLOS DE GUADIX">COGOLLOS DE GUADIX</option><option value="COÍN">COÍN</option><option value="COLMENAR">COLMENAR</option><option value="CONIL DE LA FRONTERA">CONIL DE LA FRONTERA</option><option value="CONSTANTINA">CONSTANTINA</option><option value="CÓRDOBA">CÓRDOBA</option><option value="CORIA">CORIA</option><option value="CORIA DEL RÍO">CORIA DEL RÍO</option><option value="CORNELLÀ DE LLOBREGAT">CORNELLÀ DE LLOBREGAT</option><option value="CORRALES, LOS">CORRALES, LOS</option><option value="CORTEGANA">CORTEGANA</option><option value="CORTES Y GRAENA">CORTES Y GRAENA</option><option value="CORUÑA, A">CORUÑA, A</option><option value="CORVERA DE ASTURIAS">CORVERA DE ASTURIAS</option><option value="COSLADA">COSLADA</option><option value="CUENCA">CUENCA</option><option value="CUERVO DE SEVILLA, EL">CUERVO DE SEVILLA, EL</option><option value="CUEVAS BAJAS">CUEVAS BAJAS</option><option value="CUEVAS DE SAN MARCOS">CUEVAS DE SAN MARCOS</option><option value="CUEVAS DEL ALMANZORA">CUEVAS DEL ALMANZORA</option><option value="CUEVAS DEL CAMPO">CUEVAS DEL CAMPO</option><option value="CÚLLAR">CÚLLAR</option><option value="CÚLLAR VEGA">CÚLLAR VEGA</option><option value="CUMBRES DE SAN BARTOLOMÉ">CUMBRES DE SAN BARTOLOMÉ</option><option value="CUMBRES MAYORES">CUMBRES MAYORES</option><option value="DARRO">DARRO</option><option value="DÍLAR">DÍLAR</option><option value="DON BENITO">DON BENITO</option><option value="DOÑA MENCÍA">DOÑA MENCÍA</option><option value="DOS HERMANAS">DOS HERMANAS</option><option value="DOS TORRES">DOS TORRES</option><option value="DÚRCAL">DÚRCAL</option><option value="ÉCIJA">ÉCIJA</option><option value="EJIDO, EL">EJIDO, EL</option><option value="ELCHE/ELX">ELCHE/ELX</option><option value="ENCINASOLA">ENCINASOLA</option><option value="ESCACENA DEL CAMPO">ESCACENA DEL CAMPO</option><option value="ESPARTINAS">ESPARTINAS</option><option value="ESPEJO">ESPEJO</option><option value="ESPIEL">ESPIEL</option><option value="ESTEPA">ESTEPA</option><option value="ESTEPONA">ESTEPONA</option><option value="FERNÁN-NÚÑEZ">FERNÁN-NÚÑEZ</option><option value="FINES">FINES</option><option value="FONDÓN">FONDÓN</option><option value="FORTUNA">FORTUNA</option><option value="FRAILES">FRAILES</option><option value="FREGENAL DE LA SIERRA">FREGENAL DE LA SIERRA</option><option value="FUENGIROLA">FUENGIROLA</option><option value="FUENSANTA DE MARTOS">FUENSANTA DE MARTOS</option><option value="FUENTE DE CANTOS">FUENTE DE CANTOS</option><option value="FUENTE OBEJUNA">FUENTE OBEJUNA</option><option value="FUENTE PALMERA">FUENTE PALMERA</option><option value="FUENTE VAQUEROS">FUENTE VAQUEROS</option><option value="FUENTES DE ANDALUCÍA">FUENTES DE ANDALUCÍA</option><option value="FUENTE-TÓJAR">FUENTE-TÓJAR</option><option value="GABIAS, LAS">GABIAS, LAS</option><option value="GÁDOR">GÁDOR</option><option value="GALAROZA">GALAROZA</option><option value="GALERA">GALERA</option><option value="GALLARDOS, LOS">GALLARDOS, LOS</option><option value="GAUCÍN">GAUCÍN</option><option value="GELVES">GELVES</option><option value="GERENA">GERENA</option><option value="GETAFE">GETAFE</option><option value="GETXO">GETXO</option><option value="GIBRALEÓN">GIBRALEÓN</option><option value="GILENA">GILENA</option><option value="GINES">GINES</option><option value="GÓJAR">GÓJAR</option><option value="GRANADA">GRANADA</option><option value="GRANOLLERS">GRANOLLERS</option><option value="GUADALAJARA">GUADALAJARA</option><option value="GUADALCANAL">GUADALCANAL</option><option value="GUADALCÁZAR">GUADALCÁZAR</option><option value="GUADIX">GUADIX</option><option value="GUARDIA DE JAÉN, LA">GUARDIA DE JAÉN, LA</option><option value="GUARO">GUARO</option><option value="GÜEJAR SIERRA">GÜEJAR SIERRA</option><option value="GUIJO, EL">GUIJO, EL</option><option value="GUILLENA">GUILLENA</option><option value="HERRERA">HERRERA</option><option value="HIGUERA LA REAL">HIGUERA LA REAL</option><option value="HINOJOSA DEL DUQUE">HINOJOSA DEL DUQUE</option><option value="HORNACHUELOS">HORNACHUELOS</option><option value="HOSPITALET DE LLOBREGAT, L'">HOSPITALET DE LLOBREGAT, L'</option><option value="HUÉCIJA">HUÉCIJA</option><option value="HUELMA">HUELMA</option><option value="HUELVA">HUELVA</option><option value="HUÉRCAL DE ALMERÍA">HUÉRCAL DE ALMERÍA</option><option value="HUÉRCAL-OVERA">HUÉRCAL-OVERA</option><option value="HUESA">HUESA</option><option value="HUÉSCAR">HUÉSCAR</option><option value="HUÉTOR DE SANTILLÁN">HUÉTOR DE SANTILLÁN</option><option value="HUÉTOR TÁJAR">HUÉTOR TÁJAR</option><option value="HUÉTOR VEGA">HUÉTOR VEGA</option><option value="HUMILLADERO">HUMILLADERO</option><option value="IBROS">IBROS</option><option value="ILLORA">ILLORA</option><option value="INCA">INCA</option><option value="ISLA CRISTINA">ISLA CRISTINA</option><option value="ISLA MAYOR">ISLA MAYOR</option><option value="IZNALLOZ">IZNALLOZ</option><option value="JABALQUINTO">JABALQUINTO</option><option value="JABUGO">JABUGO</option><option value="JAÉN">JAÉN</option><option value="JAMILENA">JAMILENA</option><option value="JAYENA">JAYENA</option><option value="JEREZ DE LA FRONTERA">JEREZ DE LA FRONTERA</option><option value="JEREZ DEL MARQUESADO">JEREZ DEL MARQUESADO</option><option value="JIMERA DE LÍBAR">JIMERA DE LÍBAR</option><option value="JÓDAR">JÓDAR</option><option value="JUN">JUN</option><option value="LÁCHAR">LÁCHAR</option><option value="LAHIGUERA">LAHIGUERA</option><option value="LANJARÓN">LANJARÓN</option><option value="LANTEJUELA, LA">LANTEJUELA, LA</option><option value="LÁUJAR DE ANDARAX">LÁUJAR DE ANDARAX</option><option value="LEBRIJA">LEBRIJA</option><option value="LECRÍN">LECRÍN</option><option value="LEPE">LEPE</option><option value="LINARES">LINARES</option><option value="LÍNEA DE LA CONCEPCIÓN, LA">LÍNEA DE LA CONCEPCIÓN, LA</option><option value="LLINARS DEL VALLÈS">LLINARS DEL VALLÈS</option><option value="LOGROÑO">LOGROÑO</option><option value="LOJA">LOJA</option><option value="LOPERA">LOPERA</option><option value="LORA DEL RÍO">LORA DEL RÍO</option><option value="LORCA">LORCA</option><option value="LUBRÍN">LUBRÍN</option><option value="LUCENA">LUCENA</option><option value="LUCENA DEL PUERTO">LUCENA DEL PUERTO</option><option value="LUISIANA, LA">LUISIANA, LA</option><option value="LUQUE">LUQUE</option><option value="MACAEL">MACAEL</option><option value="MADRID">MADRID</option><option value="MAIRENA DEL ALCOR">MAIRENA DEL ALCOR</option><option value="MAIRENA DEL ALJARAFE">MAIRENA DEL ALJARAFE</option><option value="MAJADAHONDA">MAJADAHONDA</option><option value="MÁLAGA">MÁLAGA</option><option value="MALAHÁ, LA">MALAHÁ, LA</option><option value="MANCHA REAL">MANCHA REAL</option><option value="MANILVA">MANILVA</option><option value="MANZANILLA">MANZANILLA</option><option value="MARACENA">MARACENA</option><option value="MARBELLA">MARBELLA</option><option value="MARCHENA">MARCHENA</option><option value="MARÍA">MARÍA</option><option value="MARMOLEJO">MARMOLEJO</option><option value="MARTOS">MARTOS</option><option value="MEDINA DE POMAR">MEDINA DE POMAR</option><option value="MEDINA-SIDONIA">MEDINA-SIDONIA</option><option value="MENGÍBAR">MENGÍBAR</option><option value="MÉRIDA">MÉRIDA</option><option value="MIJAS">MIJAS</option><option value="MISLATA">MISLATA</option><option value="MOCLÍN">MOCLÍN</option><option value="MOGUER">MOGUER</option><option value="MOJÁCAR">MOJÁCAR</option><option value="MOJONERA, LA">MOJONERA, LA</option><option value="MOLARES, LOS">MOLARES, LOS</option><option value="MOLINA DE SEGURA">MOLINA DE SEGURA</option><option value="MOLINS DE REI">MOLINS DE REI</option><option value="MOLLINA">MOLLINA</option><option value="MONACHIL">MONACHIL</option><option value="MONESTERIO">MONESTERIO</option><option value="MONTALBÁN DE CÓRDOBA">MONTALBÁN DE CÓRDOBA</option><option value="MONTCADA I REIXAC">MONTCADA I REIXAC</option><option value="MONTELLANO">MONTELLANO</option><option value="MONTEMAYOR">MONTEMAYOR</option><option value="MONTILLA">MONTILLA</option><option value="MONTORO">MONTORO</option><option value="MONTURQUE">MONTURQUE</option><option value="MORALEDA DE ZAFAYONA">MORALEDA DE ZAFAYONA</option><option value="MORALEJA">MORALEJA</option><option value="MORELÁBOR">MORELÁBOR</option><option value="MORELL, EL">MORELL, EL</option><option value="MORILES">MORILES</option><option value="MORÓN DE LA FRONTERA">MORÓN DE LA FRONTERA</option><option value="MOTRIL">MOTRIL</option><option value="MURCIA">MURCIA</option><option value="NAVALVILLAR DE PELA">NAVALVILLAR DE PELA</option><option value="NAVAS DE LA CONCEPCIÓN, LAS">NAVAS DE LA CONCEPCIÓN, LAS</option><option value="NERJA">NERJA</option><option value="NERVA">NERVA</option><option value="NEVADA">NEVADA</option><option value="NIEBLA">NIEBLA</option><option value="NIGÜELAS">NIGÜELAS</option><option value="NÍJAR">NÍJAR</option><option value="NUCIA, LA">NUCIA, LA</option><option value="NUEVA CARTEYA">NUEVA CARTEYA</option><option value="OGÍJARES">OGÍJARES</option><option value="OJÉN">OJÉN</option><option value="OLEIROS">OLEIROS</option><option value="OLITE/ERRIBERRI">OLITE/ERRIBERRI</option><option value="OLIVA, LA">OLIVA, LA</option><option value="OLIVARES">OLIVARES</option><option value="OLULA DEL RÍO">OLULA DEL RÍO</option><option value="OLVERA">OLVERA</option><option value="ONTINYENT">ONTINYENT</option><option value="OÑATI">OÑATI</option><option value="ORCE">ORCE</option><option value="ORCERA">ORCERA</option><option value="ÓRGIVA">ÓRGIVA</option><option value="OSUNA">OSUNA</option><option value="OTURA">OTURA</option><option value="OVIEDO">OVIEDO</option><option value="PADUL">PADUL</option><option value="PALACIOS Y VILLAFRANCA, LOS">PALACIOS Y VILLAFRANCA, LOS</option><option value="PALLEJÀ">PALLEJÀ</option><option value="PALMA DEL CONDADO, LA">PALMA DEL CONDADO, LA</option><option value="PALMA DEL RÍO">PALMA DEL RÍO</option><option value="PALOMARES DEL RÍO">PALOMARES DEL RÍO</option><option value="PALOS DE LA FRONTERA">PALOS DE LA FRONTERA</option><option value="PANTÓN">PANTÓN</option><option value="PARADAS">PARADAS</option><option value="PARETS DEL VALLÈS">PARETS DEL VALLÈS</option><option value="PARLA">PARLA</option><option value="PATERNA">PATERNA</option><option value="PAYMOGO">PAYMOGO</option><option value="PEAL DE BECERRO">PEAL DE BECERRO</option><option value="PEDREGUER">PEDREGUER</option><option value="PEDRERA">PEDRERA</option><option value="PEDRO ABAD">PEDRO ABAD</option><option value="PEDROCHE">PEDROCHE</option><option value="PEDROSO, EL">PEDROSO, EL</option><option value="PEGALAJAR">PEGALAJAR</option><option value="PELIGROS">PELIGROS</option><option value="PEÑAFLOR">PEÑAFLOR</option><option value="PEÑARROYA-PUEBLONUEVO">PEÑARROYA-PUEBLONUEVO</option><option value="PEPINO">PEPINO</option><option value="PEZA, LA">PEZA, LA</option><option value="PILAS">PILAS</option><option value="PINOS GENIL">PINOS GENIL</option><option value="PINOS PUENTE">PINOS PUENTE</option><option value="PÍÑAR">PÍÑAR</option><option value="PIZARRA">PIZARRA</option><option value="PLASENCIA">PLASENCIA</option><option value="PONTEVEDRA">PONTEVEDRA</option><option value="PORCUNA">PORCUNA</option><option value="POSADAS">POSADAS</option><option value="POZO ALCÓN">POZO ALCÓN</option><option value="POZOBLANCO">POZOBLANCO</option><option value="PRADO DEL REY">PRADO DEL REY</option><option value="PRIEGO DE CÓRDOBA">PRIEGO DE CÓRDOBA</option><option value="PRUNA">PRUNA</option><option value="PUEBLA DE CAZALLA, LA">PUEBLA DE CAZALLA, LA</option><option value="PUEBLA DE DON FADRIQUE">PUEBLA DE DON FADRIQUE</option><option value="PUEBLA DE GUZMÁN">PUEBLA DE GUZMÁN</option><option value="PUEBLA DE LOS INFANTES, LA">PUEBLA DE LOS INFANTES, LA</option><option value="PUEBLA DEL RÍO, LA">PUEBLA DEL RÍO, LA</option><option value="PUENTE DE GÉNAVE">PUENTE DE GÉNAVE</option><option value="PUENTE GENIL">PUENTE GENIL</option><option value="PUERTA DE SEGURA, LA">PUERTA DE SEGURA, LA</option><option value="PUERTO DE SANTA MARÍA, EL">PUERTO DE SANTA MARÍA, EL</option><option value="PUERTO LUMBRERAS">PUERTO LUMBRERAS</option><option value="PUERTO REAL">PUERTO REAL</option><option value="PUERTO SERRANO">PUERTO SERRANO</option><option value="PULIANAS">PULIANAS</option><option value="PULPÍ">PULPÍ</option><option value="PUNTA UMBRÍA">PUNTA UMBRÍA</option><option value="PURCHENA">PURCHENA</option><option value="QUART DE POBLET">QUART DE POBLET</option><option value="QUESADA">QUESADA</option><option value="RAMBLA, LA">RAMBLA, LA</option><option value="REAL DE LA JARA, EL">REAL DE LA JARA, EL</option><option value="REAL SITIO DE SAN ILDEFONSO">REAL SITIO DE SAN ILDEFONSO</option><option value="REDONDELA">REDONDELA</option><option value="REUS">REUS</option><option value="RINCÓN DE LA VICTORIA">RINCÓN DE LA VICTORIA</option><option value="RINCONADA, LA">RINCONADA, LA</option><option value="RIOGORDO">RIOGORDO</option><option value="RIPOLLET">RIPOLLET</option><option value="ROCIANA DEL CONDADO">ROCIANA DEL CONDADO</option><option value="RODA DE ANDALUCÍA, LA">RODA DE ANDALUCÍA, LA</option><option value="RONDA">RONDA</option><option value="RONQUILLO, EL">RONQUILLO, EL</option><option value="ROQUETAS DE MAR">ROQUETAS DE MAR</option><option value="ROTA">ROTA</option><option value="ROZAS DE MADRID, LAS">ROZAS DE MADRID, LAS</option><option value="RUBIO, EL">RUBIO, EL</option><option value="RUTE">RUTE</option><option value="SABIOTE">SABIOTE</option><option value="SALAR">SALAR</option><option value="SALOBREÑA">SALOBREÑA</option><option value="SALTERAS">SALTERAS</option><option value="SALVATERRA DE MIÑO">SALVATERRA DE MIÑO</option><option value="SAN BARTOLOMÉ DE LA TORRE">SAN BARTOLOMÉ DE LA TORRE</option><option value="SAN FERNANDO">SAN FERNANDO</option><option value="SAN FERNANDO DE HENARES">SAN FERNANDO DE HENARES</option><option value="SAN JUAN DE AZNALFARACHE">SAN JUAN DE AZNALFARACHE</option><option value="SAN JUAN DEL PUERTO">SAN JUAN DEL PUERTO</option><option value="SAN NICOLÁS DEL PUERTO">SAN NICOLÁS DEL PUERTO</option><option value="SAN ROQUE">SAN ROQUE</option><option value="SANLÚCAR DE BARRAMEDA">SANLÚCAR DE BARRAMEDA</option><option value="SANLÚCAR LA MAYOR">SANLÚCAR LA MAYOR</option><option value="SANT ANDREU DE LLAVANERES">SANT ANDREU DE LLAVANERES</option><option value="SANT CUGAT DEL VALLÈS">SANT CUGAT DEL VALLÈS</option><option value="SANT JUST DESVERN">SANT JUST DESVERN</option><option value="SANTA FE">SANTA FE</option><option value="SANTA OLALLA DEL CALA">SANTA OLALLA DEL CALA</option><option value="SANTAELLA">SANTAELLA</option><option value="SANTANDER">SANTANDER</option><option value="SANTIAGO DE COMPOSTELA">SANTIAGO DE COMPOSTELA</option><option value="SANTIAGO-PONTONES">SANTIAGO-PONTONES</option><option value="SANTIPONCE">SANTIPONCE</option><option value="SANTISTEBAN DEL PUERTO">SANTISTEBAN DEL PUERTO</option><option value="SANTO TOMÉ">SANTO TOMÉ</option><option value="SANTOS DE MAIMONA, LOS">SANTOS DE MAIMONA, LOS</option><option value="SANXENXO">SANXENXO</option><option value="SAUCEJO, EL">SAUCEJO, EL</option><option value="SEDELLA">SEDELLA</option><option value="SEGORBE">SEGORBE</option><option value="SEGURA DE LA SIERRA">SEGURA DE LA SIERRA</option><option value="SENÉS">SENÉS</option><option value="SERÓN">SERÓN</option><option value="SESEÑA">SESEÑA</option><option value="SETENIL DE LAS BODEGAS">SETENIL DE LAS BODEGAS</option><option value="SEVILLA">SEVILLA</option><option value="SIERRA DE YEGUAS">SIERRA DE YEGUAS</option><option value="SILES">SILES</option><option value="SOPORTÚJAR">SOPORTÚJAR</option><option value="SOUTOMAIOR">SOUTOMAIOR</option><option value="TABERNAS">TABERNAS</option><option value="TALAVERA DE LA REINA">TALAVERA DE LA REINA</option><option value="TALAYUELA">TALAYUELA</option><option value="TARIFA">TARIFA</option><option value="TARRAGONA">TARRAGONA</option><option value="TEBA">TEBA</option><option value="TELDE">TELDE</option><option value="TERRASSA">TERRASSA</option><option value="TÍJOLA">TÍJOLA</option><option value="TOCINA">TOCINA</option><option value="TOMARES">TOMARES</option><option value="TOMELLOSO">TOMELLOSO</option><option value="TORRE DEL CAMPO">TORRE DEL CAMPO</option><option value="TORREBLASCOPEDRO">TORREBLASCOPEDRO</option><option value="TORREDONJIMENO">TORREDONJIMENO</option><option value="TORREJÓN DE ARDOZ">TORREJÓN DE ARDOZ</option><option value="TORRELAVEGA">TORRELAVEGA</option><option value="TORREMOLINOS">TORREMOLINOS</option><option value="TORREPEROGIL">TORREPEROGIL</option><option value="TORRES">TORRES</option><option value="TREBUJENA">TREBUJENA</option><option value="TRES CANTOS">TRES CANTOS</option><option value="TRIGUEROS">TRIGUEROS</option><option value="TUDELA">TUDELA</option><option value="TURRE">TURRE</option><option value="ÚBEDA">ÚBEDA</option><option value="UBRIQUE">UBRIQUE</option><option value="UGÍJAR">UGÍJAR</option><option value="ULEILA DEL CAMPO">ULEILA DEL CAMPO</option><option value="UMBRETE">UMBRETE</option><option value="UTRERA">UTRERA</option><option value="VALDEMORILLO">VALDEMORILLO</option><option value="VALDEMORO">VALDEMORO</option><option value="VALDEPEÑAS">VALDEPEÑAS</option><option value="VALDEPEÑAS DE JAÉN">VALDEPEÑAS DE JAÉN</option><option value="VALENCIA">VALENCIA</option><option value="VALENCINA DE LA CONCEPCIÓN">VALENCINA DE LA CONCEPCIÓN</option><option value="VALL D'UIXÓ, LA">VALL D'UIXÓ, LA</option><option value="VALLADOLID">VALLADOLID</option><option value="VALLE DEL ZALABÍ">VALLE DEL ZALABÍ</option><option value="VÁLOR">VÁLOR</option><option value="VALVERDE DEL CAMINO">VALVERDE DEL CAMINO</option><option value="VEGAS DEL GENIL">VEGAS DEL GENIL</option><option value="VEJER DE LA FRONTERA">VEJER DE LA FRONTERA</option><option value="VÉLEZ DE BENAUDALLA">VÉLEZ DE BENAUDALLA</option><option value="VÉLEZ-BLANCO">VÉLEZ-BLANCO</option><option value="VÉLEZ-MÁLAGA">VÉLEZ-MÁLAGA</option><option value="VÉLEZ-RUBIO">VÉLEZ-RUBIO</option><option value="VERA">VERA</option><option value="VIATOR">VIATOR</option><option value="VÍCAR">VÍCAR</option><option value="VICTORIA, LA">VICTORIA, LA</option><option value="VIGO">VIGO</option><option value="VILA-REAL">VILA-REAL</option><option value="VILCHES">VILCHES</option><option value="VILLA DEL RÍO">VILLA DEL RÍO</option><option value="VILLACARRILLO">VILLACARRILLO</option><option value="VILLAFRANCA DE CÓRDOBA">VILLAFRANCA DE CÓRDOBA</option><option value="VILLALBA DEL ALCOR">VILLALBA DEL ALCOR</option><option value="VILLAMANRIQUE DE LA CONDESA">VILLAMANRIQUE DE LA CONDESA</option><option value="VILLAMARTÍN">VILLAMARTÍN</option><option value="VILLAMENA">VILLAMENA</option><option value="VILLANUEVA DE ALGAIDAS">VILLANUEVA DE ALGAIDAS</option><option value="VILLANUEVA DE CÓRDOBA">VILLANUEVA DE CÓRDOBA</option><option value="VILLANUEVA DE LA CAÑADA">VILLANUEVA DE LA CAÑADA</option><option value="VILLANUEVA DE LA CONCEPCIÓN">VILLANUEVA DE LA CONCEPCIÓN</option><option value="VILLANUEVA DE LA REINA">VILLANUEVA DE LA REINA</option><option value="VILLANUEVA DE LOS CASTILLEJOS">VILLANUEVA DE LOS CASTILLEJOS</option><option value="VILLANUEVA DEL ARISCAL">VILLANUEVA DEL ARISCAL</option><option value="VILLANUEVA DEL ARZOBISPO">VILLANUEVA DEL ARZOBISPO</option><option value="VILLANUEVA DEL RÍO Y MINAS">VILLANUEVA DEL RÍO Y MINAS</option><option value="VILLANUEVA DEL ROSARIO">VILLANUEVA DEL ROSARIO</option><option value="VILLANUEVA DEL TRABUCO">VILLANUEVA DEL TRABUCO</option><option value="VILLANUEVA MESÍA">VILLANUEVA MESÍA</option><option value="VILLARES, LOS">VILLARES, LOS</option><option value="VILLARRUBIA DE SANTIAGO">VILLARRUBIA DE SANTIAGO</option><option value="VILLATORRES">VILLATORRES</option><option value="VILLAVERDE DEL RÍO">VILLAVERDE DEL RÍO</option><option value="VILLAVICIOSA DE CÓRDOBA">VILLAVICIOSA DE CÓRDOBA</option><option value="VIÑUELA">VIÑUELA</option><option value="VISO DEL ALCOR, EL">VISO DEL ALCOR, EL</option><option value="VISO, EL">VISO, EL</option><option value="VITORIA-GASTEIZ">VITORIA-GASTEIZ</option><option value="VÍZNAR">VÍZNAR</option><option value="YUNCOS">YUNCOS</option><option value="YUNQUERA">YUNQUERA</option><option value="ZALAMEA LA REAL">ZALAMEA LA REAL</option><option value="ZARAGOZA">ZARAGOZA</option><option value="ZUBIA, LA">ZUBIA, LA</option><option value="ZÚJAR">ZÚJAR</option><option value="ZURGENA">ZURGENA</option>
+</select>
+</div>
+</td>
+<td align="center" width="200px">Actuaciones incentivables habilitadas:</td>
+<td align="right" width="200px">
+<div id="div_Act2"><select style="width: 200px;" id="ACT" name="ACT">
+
+
+<option value="">--Selecciona Actuación--</option><option value="01PS">01PS-a)&nbsp;Mejora energética de instalaciones de energías renovables existentes</option><option value="02PS">02PS-b)&nbsp;Nuevos sistemas de energías renovables </option><option value="03PS">03PS-c)&nbsp;Grandes sistemas solares térmicos para procesos</option><option value="04PS">04PS-d)&nbsp;Soluciones avanzadas para la generación energética con energías renovables</option><option value="05PS">05PS-a)&nbsp;Actuaciones o proyectos de producción o logística de biomasa</option><option value="06PS">06PS-b)&nbsp;Actuaciones o proyectos de producción o logística de biomasa arbórea o herbácea</option><option value="07PS">07PS-c)&nbsp;Soluciones integrales para producción, distribución y logística de la biomasa o fabricación de biocarburantes</option><option value="08PS">08PS-a)&nbsp;Incorporación de equipos que permitan el aprovechamiento de energías residuales</option><option value="09PS">09PS-b) Rediseño de procesos que permitan el aprovechamiento de energías residuales </option><option value="10PS">10PS-a) Renovación de equipos e instalaciones para mayor eficiencia energética</option><option value="11PS">11PS-b)&nbsp;Mejora energética de los procesos</option><option value="12PS">12PS-c) Soluciones avanzadas para la reforma de instalaciones o procesos</option><option value="13PS">13PS-a)&nbsp;Renovación de cogeneraciones existentes</option><option value="14PS">14PS-b) Implantación de nueva cogeneración</option><option value="15PS">15PS-a)&nbsp;Renovación de equipos e instalaciones para la sustitución de combustibles o energías tradicionales</option><option value="16PS">16PS-b) Soluciones avanzadas para la sustitución de combustibles o energías tradicionales</option><option value="17PS">17PS-a)&nbsp;Elementos de contabilización y seguimiento</option><option value="18PS">18PS-b) Implantación de sistemas de gestión energética de flotas de transporte</option><option value="19PS">19PS-c)  Implantación de sistemas de gestión energética</option><option value="20PS">20PS-d) Evaluación energética comparada de la eficiencia energética</option><option value="21PS">21PS-a)&nbsp;&nbsp;Medidas de mejora energética</option><option value="22PS">22PS-b)  Actuaciones avanzadas de mejora energética</option></select></div>
+</td>
+</tr>
+</tbody></table>
+</center>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" value="Filtrar" id="filt">&nbsp;
+<input type="button" value="Limpiar filtro" onclick="window.location.reload(true);">&nbsp;
+<!--<input type="button" name ="exportar" value="Excel" id="exportar">-->
+<!-- <input type="hidden" name="accion" value="consulta"> -->
+<!-- <input type="hidden" name="ACCION" value="EXPORTAR"> -->
+<hr>
+</form>
+</div>
+<center>
+
+
+<div id="lTab" "="">
+<div id="lAtAbla_wrapper" class="dataTables_wrapper no-footer"><div class="dataTables_length" id="lAtAbla_length"><label>Mostrar <select name="lAtAbla_length" aria-controls="lAtAbla" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> registros por página</label></div><div id="lAtAbla_filter" class="dataTables_filter"><label>Búsqueda:<input type="search" class="" placeholder="" aria-controls="lAtAbla"></label></div><table id="lAtAbla" class="display compact no-footer dataTable" cellspacing="0" width="100%" style="font-size: 80%; width: 100%;" role="grid" aria-describedby="lAtAbla_info">
+<thead>
+<tr role="row"><td align="center" class="sorting_asc" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="FECHAINSCRIPCIÓN: activate to sort column descending" style="width: 81px;" aria-sort="ascending">FECHA<br>INSCRIPCIÓN</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="CÓDIGOIDENTIFICATIVO: activate to sort column ascending" style="width: 101px;">CÓDIGO<br>IDENTIFICATIVO</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="RAZÓNSOCIAL: activate to sort column ascending" style="width: 92px;">RAZÓN<br>SOCIAL</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="NOMBRECOMERCIAL: activate to sort column ascending" style="width: 95px;">NOMBRE<br>COMERCIAL</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="DOMICILIO SOCIAL: activate to sort column ascending" style="width: 76px;">DOMICILIO SOCIAL</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="TELÉFONO: activate to sort column ascending" style="width: 66px;">TELÉFONO</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="FAX: activate to sort column ascending" style="width: 50px;">FAX</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="CORREOELECTRÓNICO: activate to sort column ascending" style="width: 323px;">CORREO<br>ELECTRÓNICO</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="PÁGINA WEB: activate to sort column ascending" style="width: 466px;">PÁGINA WEB</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="INFORMACIÓNADICIONAL: activate to sort column ascending" style="width: 90px;">INFORMACIÓN<br>ADICIONAL</td></tr>
+</thead>
+<tbody id="cuerpo">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr role="row" class="odd"><td align="center" class="sorting_1">22/03/2017</td><td align="center">1440</td><td align="center">FRANCISCO JAVIER GARCIA CARRILLO</td><td align="center">PACO GARCIA</td><td align="center">CALLE DOCTOR FLEMING Nº 15, 14850, BAENA, CÓRDOBA</td><td align="center">628858888</td><td align="center">628858888</td><td>PACOAPAREJADOR@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1440','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">22/03/2017</td><td align="center">1339</td><td align="center">PERSIMA SL</td><td align="center">PERSIMA</td><td align="center">POLIGONO SAN PANCRACIO C/ CASUALIDAD Nº 3, 14500, PUENTE GENIL, CÓRDOBA</td><td align="center">957602156</td><td align="center">957609812</td><td>INFO@PERSIMA.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1339','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">22/03/2017</td><td align="center">1400</td><td align="center">INSTALACION DE BIOMASA Y SOLAR DEL SUR SL</td><td align="center">SOLBISUR</td><td align="center">URBANIZACION LOS POLEARES Nº 24, 14900, LUCENA, CÓRDOBA</td><td align="center">957591667</td><td align="center">-</td><td>GESTION@SOLBISUR.COM</td><td align="center">WWW.SOLBISUR.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1400','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">22/03/2019</td><td align="center">4916</td><td align="center">ANA RUZ LOVERA</td><td align="center">ANA RUZ LOVERA</td><td align="center">AVENIDA ANDALUCIA Nº 92, 14550, MONTILLA, CÓRDOBA</td><td align="center">625226847</td><td align="center">-</td><td>ANA.RUZ551@ARQUIHUELVA.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4916','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">22/05/2017</td><td align="center">2588</td><td align="center">FAJOSA SL</td><td align="center">FAJOSA SL</td><td align="center">CALLE POETA RAFAEL ALBERTI Nº 20 PLANTA BJ, 14850, BAENA, CÓRDOBA</td><td align="center">957671939</td><td align="center">957691394</td><td>INFO@FAJOSA.COM</td><td align="center">WWW.FAJOSA.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2588','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">22/05/2017</td><td align="center">2590</td><td align="center">RAUL FERNANDO VARGAS VANEGAS</td><td align="center">RAUL FERNANDO VARGAS VANEGAS. ESTUDIO DE ARQUITECTURA</td><td align="center">CALLE BELEN Nº 12 ESCALERA 1 PUERTA B, 14270, HINOJOSA DEL DUQUE, CÓRDOBA</td><td align="center">675269824</td><td align="center">-</td><td>RAULVARGAS73@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2590','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">22/06/2017</td><td align="center">3076</td><td align="center">CONSTRUCCIONES Y MONTAJES RODRIGUEZ SL</td><td align="center">CMR OBRAS &amp; SERVICIOS</td><td align="center">CALLE GABRIEL RAMOS BEJARANO PARCELA 234 POL. IND. LAS QUEMADAS Nº 234, 14014, CÓRDOBA, CÓRDOBA</td><td align="center">957325831</td><td align="center">957083514</td><td>INFORMACION@CMROBRASYSERVICIOS.COM</td><td align="center">WWW.CMROBRASYSERVICIOS.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3076','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">22/06/2017</td><td align="center">3074</td><td align="center">PEDRO MIGUEL CARRERO MARTINEZ</td><td align="center">MCM PROYECTOS</td><td align="center">CALLE RONDA DE LOS MUÑOCES Nº 42 PLANTA 2 PUERTA D, 14400, POZOBLANCO, CÓRDOBA</td><td align="center">-</td><td align="center">645401383</td><td>MCMPROYECTOS@YAHOO.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3074','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">22/07/2019</td><td align="center">5123</td><td align="center">LA ELECTRICA DE VILLANUEVA DE CORDOBA SA</td><td align="center">LA ELECTRICA DE VILLANUEVA DE CORDOBA SA</td><td align="center">CALLE CAÑUELO Nº 6, 14440, VILLANUEVA DE CÓRDOBA, CÓRDOBA</td><td align="center">957120286</td><td align="center">-</td><td>FJARELLANO@GRUPOEVC.ES</td><td align="center">HTTPS://WWW.LAELECTRICADEVILLANUEVADECORDOBA.COM/</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5123','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">22/08/2018</td><td align="center">4544</td><td align="center">DIEGO PORCUNA BERMUDEZ</td><td align="center">HISPANICA INGENIEROS CONSULTORES</td><td align="center">CALLE CASAS DE CARMONA Nº 7, 14850, BAENA, CÓRDOBA</td><td align="center">-</td><td align="center">626248124</td><td>DPB@HISPANICAINGENIEROS.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4544','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/01/2018</td><td align="center">3636</td><td align="center">ALARCON RAMIREZ INST.TCAS  SLU</td><td align="center">ARIT</td><td align="center">CALLE TRAVESIA BAJA Nº 14, 14549, SANTAELLA, CÓRDOBA</td><td align="center">653941054</td><td align="center">-</td><td>ANTONIO.ALARCON@ARIT.ES</td><td align="center">WWW.ARIT.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3636','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/01/2019</td><td align="center">4747</td><td align="center">CONSTRUCCIONES DODICA 2004 SL</td><td align="center">-</td><td align="center">CALLE AMADEO VIVES Nº 2, 14700, PALMA DEL RÍO, CÓRDOBA</td><td align="center">687453483</td><td align="center">-</td><td>CTSDODICA@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4747','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/02/2017</td><td align="center">458</td><td align="center">ALUMINIOS GALIOT  S.L.</td><td align="center">ALUMINIOS GALIOT,  S.L.</td><td align="center">AVENIDA VIRGEN DE LAS ANGUSTIAS Nº 47, 14006, CÓRDOBA, CÓRDOBA</td><td align="center">957282028</td><td align="center">957400303</td><td>ALUMINIOSGALIOT@GMAIL.COM</td><td align="center">WWW.ALUMINIOSGALIOT.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=458','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/02/2017</td><td align="center">1028</td><td align="center">RAFAEL ROLDAN MORAL</td><td align="center">RAFAEL ROLDAN MORAL</td><td align="center">CALLE SAN MARCOS Nº 18 ESCALERA 2, 14940, CABRA, CÓRDOBA</td><td align="center">636951004</td><td align="center">-</td><td>RAFAEL@ADN.EU</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1028','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/02/2017</td><td align="center">475</td><td align="center">ISABEL MARIA PRIETO MARTINEZ</td><td align="center">SHOWROOM VENTANAS Y TECHOS </td><td align="center">AVENIDA ISLA FUERTEVENTURA Nº 1, 14011, CÓRDOBA, CÓRDOBA</td><td align="center">683388494</td><td align="center">-</td><td>INFO@SHOWROOMISABEL.COM</td><td align="center">WWW.SHOWROOMISABEL.COM </td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=475','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/02/2017</td><td align="center">504</td><td align="center">BUENROSTRO SL LABORAL</td><td align="center">TIEN-21 PRIEGO</td><td align="center">CALLE SAN MARCOS Nº 66, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">957541275</td><td align="center">-</td><td>BUENROSTRO.SL@HOTMAIL.COM</td><td align="center">BUENROSTRO.SL@HOTMAIL.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=504','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/03/2017</td><td align="center">1531</td><td align="center">BOBINADOS MONTILLA Y GARCIA SL</td><td align="center">BOBINADOS MONTILLA Y GARCIA SL</td><td align="center">CALLE PUENTE VADILLO Nº 24, 14900, LUCENA, CÓRDOBA</td><td align="center">957591555</td><td align="center">957591555</td><td>BMYGSLL@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1531','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/03/2017</td><td align="center">1313</td><td align="center">MAGTEL OPERACIONES SLU</td><td align="center">MAGTEL OPERACIONES SLU</td><td align="center">CALLE GABRIEL RAMOS BEJARANO Nº 114, 14014, CÓRDOBA, CÓRDOBA</td><td align="center">957429060</td><td align="center">957429061</td><td>DESARROLLO.ENERGETICO@MAGTEL.ES</td><td align="center">WWW.MAGTEL.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1313','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/05/2017</td><td align="center">2582</td><td align="center">ANTONIO JESUS TOFE MONTORO</td><td align="center">ANTONIO TOFE MONTORO</td><td align="center">CALLE HORNO VIEJO Nº 1 PLANTA 1 PUERTA B, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">685489679</td><td>ANTONIO_TOFE@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2582','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/05/2017</td><td align="center">2626</td><td align="center">CONSULTORIA TECNOLOGICA SA</td><td align="center">CONSULTEC, S.A.</td><td align="center">CALLE CRONISTA SALCEDO HIERRO Nº 6, 14001, CÓRDOBA, CÓRDOBA</td><td align="center">957476976</td><td align="center">957487839</td><td>CONSULTECSA@CONSULTECSA.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2626','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/05/2019</td><td align="center">5010</td><td align="center">ANDALUZA DE RENOVABLES 2020 SL</td><td align="center">ANDALUZA DE RENOVABLES 2020, S.L.</td><td align="center">POLIGONO SAN PANCRACIO, C/ EL CARMEN PARC.1 NAVE 4, 14500, PUENTE GENIL, CÓRDOBA</td><td align="center">654658804</td><td align="center">-</td><td>BENJUMEAHERRERA@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5010','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/06/2017</td><td align="center">2998</td><td align="center">ISABEL MARIA SANCHEZ GARCIA</td><td align="center">LA FRAGUA</td><td align="center">CALLE NORIA Nº 7, 14450, AÑORA, CÓRDOBA</td><td align="center">696906255</td><td align="center">-</td><td>LAFRAGUAFORJA@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2998','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/06/2017</td><td align="center">2960</td><td align="center">REURBE . SL</td><td align="center">REURBE</td><td align="center">CALLE RONDA SUR  Nº 101, 14100, CARLOTA, LA, CÓRDOBA</td><td align="center">957300571</td><td align="center">-</td><td>INFO@REURBE.COM</td><td align="center">HTTP://WWW.REURBE.COM/</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2960','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/06/2017</td><td align="center">3047</td><td align="center">S. F. GUZMAN CB</td><td align="center">S.F.GUZMAN C.B</td><td align="center">CALLE VIVERO  Nº 1 LETRA BJ, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">686996319</td><td align="center">-</td><td>SFGUZMANFONTANERIA@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3047','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/08/2017</td><td align="center">3338</td><td align="center">RECICLADOS GAROSAL SL</td><td align="center">GAROSAL INGENIERIA</td><td align="center">CALLE ESCRITOR MERCADO SOLIS Nº 8, 14011, CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">634588368</td><td>PGALAN@GAROSAL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3338','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">23/12/2019</td><td align="center">5464</td><td align="center">JOSAN RUIZ SL</td><td align="center">JOSAN RUIZ SL</td><td align="center">CAMINO CORTIJUELOS Nº 0, 14540, RAMBLA, LA, CÓRDOBA</td><td align="center">957684146</td><td align="center">-</td><td>JOSANRUIZSL@YAHOO.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5464','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">23/12/2019</td><td align="center">5447</td><td align="center">ARTURO GOMEZ MOLINA</td><td align="center">-</td><td align="center">CALLE HERMANO BONIFACIO Nº 8, 14012, CÓRDOBA, CÓRDOBA</td><td align="center">650099026</td><td align="center">-</td><td>ARGOMEZMOLINA@ICLOUD.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5447','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">24/02/2017</td><td align="center">991</td><td align="center">ENERGSUR SOLAR SL</td><td align="center">ENERGSUR SOLAR</td><td align="center">AVENIDA LA PALMERA Nº 4, 14120, FUENTE PALMERA, CÓRDOBA</td><td align="center">957638266</td><td align="center">-</td><td>ADMINISTRACION@ENERGSUR.COM</td><td align="center">WWW.ENERGSUR.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=991','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">24/02/2017</td><td align="center">543</td><td align="center">FRIO NUEVO S.L.</td><td align="center">FRIONUEVO, S.L.</td><td align="center">AVENIDA OLLERIAS Nº 47, 14001, CÓRDOBA, CÓRDOBA</td><td align="center">957485353</td><td align="center">957486577</td><td>FRIONUEVO@FRIONUEVO.ES</td><td align="center">HTTPS://FRIONUEVO.ES/</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=543','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">24/02/2017</td><td align="center">503</td><td align="center">P V CASTRO SL</td><td align="center">PV CASTRO S.L</td><td align="center">POLIGONO LA VEGA, PARCELA 76 B-C, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">957541153</td><td align="center">-</td><td>INFO@PVCASTRO.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=503','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">24/02/2017</td><td align="center">773</td><td align="center">TECHOS MOVILES DE MONTILLA SC</td><td align="center">TECHOS MOVILES DE MONTILLA, S.C.</td><td align="center">AVENIDA AVENIDA DE SANTA MARIA Nº 36, 14550, MONTILLA, CÓRDOBA</td><td align="center">626469163</td><td align="center">-</td><td>AGARCIAESPEJO@HOTMAIL.COM</td><td align="center">WWW.TECHOSMOVILESDEMONTILLA.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=773','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">24/03/2017</td><td align="center">29</td><td align="center">INSTALACIONES SAESLA SL</td><td align="center">INSTALACIONES SAESLA</td><td align="center">CALLE ALMERIA Nº 4, 14113, FUENTE PALMERA, CÓRDOBA</td><td align="center">957715748</td><td align="center">-</td><td>SAESLA@SAESLA.ES</td><td align="center">WWW.SAESLA.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=29','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">24/03/2017</td><td align="center">1443</td><td align="center">PABLO FUENTES INSTALACIONES ELECTRICAS SL</td><td align="center">PABLO FUENTES INSTALACIONES ELECTRICAS SL</td><td align="center">CALLE JUAN RICO Nº 21, 14900, LUCENA, CÓRDOBA</td><td align="center">957591822</td><td align="center">957591822</td><td>ELECTRICIDADPABLOFUENTES@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1443','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">24/04/2017</td><td align="center">1701</td><td align="center">ELECTRODOMESTICOS UBEDA SL</td><td align="center">ELECTRODOMESTICOS UBEDA SL</td><td align="center">CALLE REAL Nº 11, 14440, VILLANUEVA DE CÓRDOBA, CÓRDOBA</td><td align="center">957123447</td><td align="center">-</td><td>ELECTROUBEDA@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1701','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">24/04/2017</td><td align="center">1897</td><td align="center">MANUEL MUÑOZ PEREZ</td><td align="center">MANUEL MUÑOZ PÉREZ</td><td align="center">PROLONGACION EL CAÑUELO ALTO S/N, 14013, CÓRDOBA, CÓRDOBA</td><td align="center">629420373</td><td align="center">957294977</td><td>INFO@CONSTRUCCIONESRACAMA.COM</td><td align="center">WWW.CONSTRUCCIONESRACAMA.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1897','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">24/04/2018</td><td align="center">3993</td><td align="center">TALLERES LOPEZ GARRIDO SA</td><td align="center">TALLERES LÓPEZ GARRIDO S.A</td><td align="center">CARRETERA CÓRDOBA-GUADALCAZAR KM 1, 14130, GUADALCÁZAR, CÓRDOBA</td><td align="center">-</td><td align="center">747795139</td><td>FINANCIERO@LOPEZGARRIDO.COM</td><td align="center">WWW.LOPEZGARRIDO.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3993','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">24/05/2017</td><td align="center">2497</td><td align="center">ENERGIAS RENOVABLES Y CLIMA SL</td><td align="center">ENCORCLIMA SL</td><td align="center">AVENIDA DE LA ARRUZAFILLA  Nº 5 PLANTA 3 PUERTA 1, 14011, CÓRDOBA, CÓRDOBA</td><td align="center">957274711</td><td align="center">-</td><td>INFO@ENCORCLIMA.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2497','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">25/01/2019</td><td align="center">4800</td><td align="center">FRANCISCO JESÚS MONTERO GARCÍA</td><td align="center">FRANCISCO JESÚS MONTERO GARCÍA</td><td align="center">CALLE OBISPO LÓPEZ CRIADO Nº 6, 14001, CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">666224819</td><td>MONTEROGARCIAFJ@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4800','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">25/02/2020</td><td align="center">5577</td><td align="center">JOSE CARLOS BORREGO ALCAIDE</td><td align="center">DIRELUX</td><td align="center">CALLE REINA ZINGA DE ANGOLA Nº 3, 14011, CÓRDOBA, CÓRDOBA</td><td align="center">669592688</td><td align="center">-</td><td>JOSEBORREGO@DIRELUX.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5577','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">25/04/2017</td><td align="center">2002</td><td align="center">CRECE INGENIERIA SL</td><td align="center">CRECE INGENIERIA SL</td><td align="center">CALLE POETA PAREDES Nº 9 LETRA D, 14012, CÓRDOBA, CÓRDOBA</td><td align="center">957746778</td><td align="center">-</td><td>ADMINISTRACION@CRECEINGENIERIA.ES</td><td align="center">WWW.CRECEINGENIERIA.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2002','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">25/04/2017</td><td align="center">1986</td><td align="center">EMERGIAL WERLINCO SL</td><td align="center">EMERGIAL WERLINCO SL</td><td align="center">CALLE SIMON CARPINTERO  Nº 82, 14014, CÓRDOBA, CÓRDOBA</td><td align="center">957111957</td><td align="center">-</td><td>EMERGIAL@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1986','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">25/04/2017</td><td align="center">1937</td><td align="center">FONTANERIA ESCUDERO SL</td><td align="center">FONTANERIA ESCUDERO S.L. </td><td align="center">CALLE PEÑUELAS  Nº 7 PLANTA BJ, 14900, LUCENA, CÓRDOBA</td><td align="center">957515192</td><td align="center">957515192</td><td>FONTANERIAESCUDERO@HOTMAIL.ES</td><td align="center">WWW.ESCUDEROFONTANERIA.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1937','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">25/04/2018</td><td align="center">4015</td><td align="center">MONPELEC SL LABORAL</td><td align="center">MONPELEC SL</td><td align="center">AVENIDA MARQUES DE LA VEGA DE ARMIJO Nº 81, 14550, MONTILLA, CÓRDOBA</td><td align="center">618955911</td><td align="center">-</td><td>PRODUCCION@MONPELEC.COM</td><td align="center">WWW.MONPELEC.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4015','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">25/05/2018</td><td align="center">4282</td><td align="center">RAFAEL ALCALA LOPEZ</td><td align="center">AIDSUR</td><td align="center">CALLE MONTURQUE Nº 90, 14510, MORILES, CÓRDOBA</td><td align="center">-</td><td align="center">620951679</td><td>RAFAEL_ALCALA15@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4282','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">25/05/2018</td><td align="center">4259</td><td align="center">HIDRAULICA Y FOTOVOLTAICA SL</td><td align="center">HYFOTEC</td><td align="center">CALLE JUAN DE LA CIERVA  Nº 31, 14550, MONTILLA, CÓRDOBA</td><td align="center">957960850</td><td align="center">-</td><td>ADMINISTRACION@HYFOTEC.COM</td><td align="center">WWW.HYFOTEC.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4259','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">25/05/2018</td><td align="center">4236</td><td align="center">INJUBER SOLUCIONES DE INGENIERIA SL</td><td align="center">INJUBER SOLUCIONES DE INGENIERIA</td><td align="center">POLIGONO LOS LLANOS FASE II C/ BUJALANCE (NAVE INJUBER) Nº 9, 14850, BAENA, CÓRDOBA</td><td align="center">957690417</td><td align="center">-</td><td>GESTION.FOTOVOLTAICA@INJUBER.COM</td><td align="center">WWW.INJUBER.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4236','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">25/05/2018</td><td align="center">4220</td><td align="center">MONTAJES ELECTRICOS VILLAFRANCA SL</td><td align="center">VILLAELECTRI</td><td align="center">CALLE EL NOGAL  Nº 20, 14420, VILLAFRANCA DE CÓRDOBA, CÓRDOBA</td><td align="center">957113214</td><td align="center">-</td><td>ADMINISTRACION@VILLAELECTRI.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4220','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">25/05/2018</td><td align="center">4260</td><td align="center">INJUBER SL</td><td align="center">-</td><td align="center">POLIGONO IND. LOS LLANOS FASE II CALLE BUJALANCE 9, 14850, BAENA, CÓRDOBA</td><td align="center">957690417</td><td align="center">-</td><td>FRANCISCO.JURADO@INJUBER.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4260','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">25/05/2020</td><td align="center">5659</td><td align="center">INGENIERIA Y GESTION TECNICA AGROINDUSTRIAL SL</td><td align="center">INGENIERÍA Y GESTIÓN TÉCNICA AGROINDUSTRIAL S.L.</td><td align="center">AVENIDA RONDA DE LOS TEJARES Nº 3 PLANTA 1 PUERTA 1, 14001, CÓRDOBA, CÓRDOBA</td><td align="center">629629267</td><td align="center">-</td><td>INFO@INGETEA.COM</td><td align="center">WWW.INGETEA.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5659','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">25/06/2019</td><td align="center">5073</td><td align="center">INSTALACIONES ELECTRICAS BAÑON SL</td><td align="center">INSTALACIONES ELÉCTRICAS BAÑÓN S.L.</td><td align="center">AVENIDA EXTREMADURA Nº 75, 14900, LUCENA, CÓRDOBA</td><td align="center">649851023</td><td align="center">-</td><td>COMERCIAL@INSTALACIONESFB.COM</td><td align="center">WWW.INSTALACIONESFB.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5073','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">25/10/2019</td><td align="center">5269</td><td align="center">FRANCISCO JAVIER PULIDO ESCRIBANO</td><td align="center">-</td><td align="center">CALLE ACADÉMICO LUIS MAPELLI Nº 6, 14100, CARLOTA, LA, CÓRDOBA</td><td align="center">653943765</td><td align="center">-</td><td>JAVIERPULIDO@ESTUDIOAGI.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5269','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/02/2018</td><td align="center">3719</td><td align="center">CONSTRUCCIONES Y DECORACION HIJOS DE A SABAN SL</td><td align="center">SABAN CONSTRUCCIONES</td><td align="center">CAMINO CAMINO DE LOS POLEARES Nº 38, 14900, LUCENA, CÓRDOBA</td><td align="center">957113070</td><td align="center">957515550</td><td>ADMINISTRACION@SABANCONSTRUCCIONES.ES</td><td align="center">WWW.SABANCONSTRUCCIONES.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3719','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/03/2020</td><td align="center">5620</td><td align="center">INGENAVE SL</td><td align="center">INGENAVE, S. L.</td><td align="center">POLIGONO  DE QUINTOS, PARC. B - C, 14005, CÓRDOBA, CÓRDOBA</td><td align="center">957324511</td><td align="center">-</td><td>INGENAVE@INGENAVE.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5620','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/04/2017</td><td align="center">1919</td><td align="center">FRIO Y CLIMATIZACION VALCARCEL SL</td><td align="center">FRIO YCLIMATIZACION VALCARCEL S.L.</td><td align="center">CALLE PEDRO ANGULO Nº 24, 14900, LUCENA, CÓRDOBA</td><td align="center">649851087</td><td align="center">-</td><td>FRIOVALCARCEL@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1919','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/04/2017</td><td align="center">2006</td><td align="center">PEDRO JOSE GUERRERO ALONSO</td><td align="center">G2 ARQUITECTOS</td><td align="center">CALLE FRAY PEDRO DE CÓRDOBA Nº 14, 14009, CÓRDOBA, CÓRDOBA</td><td align="center">957245783</td><td align="center">957245783</td><td>PGUERRERO.ARQUITECTO@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2006','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/04/2018</td><td align="center">3997</td><td align="center">JOSE LUIS GOMEZ BALLESTELROS</td><td align="center">JOSE LUIS GOMEZ BALLESTEROS</td><td align="center">AVENIDA REPUBLICA DOMINICANA Nº 5 PLANTA 1 PUERTA 6, 14700, PALMA DEL RÍO, CÓRDOBA</td><td align="center">-</td><td align="center">629579893</td><td>JOSELUISPINTA2@YAHOO.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3997','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/04/2018</td><td align="center">4078</td><td align="center">GRUPO FYR PACOMINIOS SL</td><td align="center">PACOMINIOS</td><td align="center">AVENIDA SAN CARLOS DE CHILE Nº 89, 14850, BAENA, CÓRDOBA</td><td align="center">-</td><td align="center">660539923</td><td>INFO@PACOMINIOS.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4078','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/04/2019</td><td align="center">4957</td><td align="center">VICENTE CEBALLOS SOLDADO</td><td align="center">VICENTE CEBALLOS SOLDADO</td><td align="center">CALLE SOLANA Nº 2 ESCALERA 1, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">957541453</td><td align="center">-</td><td>VICENTECEBALLOS.UTEFDM@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4957','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/05/2017</td><td align="center">2670</td><td align="center">VALENTÍN MÁRQUEZ GALISTEO</td><td align="center">ALUMIVAL</td><td align="center">CALLE RAFAEL GORDILLO Nº 4, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">957701328</td><td align="center">957701328</td><td>ALUMIVAL@MSN.COM</td><td align="center">ALUMIVAL.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2670','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/05/2017</td><td align="center">1031</td><td align="center">ELECTRICIDAD JIMENEZ CB</td><td align="center">ELECTRICIDAD JIMENEZ CB</td><td align="center">CALLE JESUS Nº 4, 14620, CARPIO, EL, CÓRDOBA</td><td align="center">696452930</td><td align="center">-</td><td>AJIMENEZELECTRICIDAD@WANADOO.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1031','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/05/2017</td><td align="center">2716</td><td align="center">INSTALACION DE FONTANERIA SERRANO ARIAS SL</td><td align="center">INSTALACION DE FONTANERIA SERRANO ARIAS SL</td><td align="center">CALLE LA PAZ Nº 14, 14850, BAENA, CÓRDOBA</td><td align="center">957691889</td><td align="center">619841620</td><td>SERRANOARIAS@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2716','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/05/2017</td><td align="center">2681</td><td align="center">JOSE FRANCISCO BERMEJO CHACON</td><td align="center">LUMIOLEDS</td><td align="center">CALLE GEMA PARCELA 17 Nº 3, 14014, CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">957846208</td><td>LUMIOLEDS@LUMIOLEDS.ES</td><td align="center">WWW.LUMIOLEDS.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2681','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/06/2017</td><td align="center">2924</td><td align="center">ITEC ASOCIADOS SCA</td><td align="center">ITEC ASOCIADOS S.C.A.</td><td align="center">POLIGONO EL CASAR Nº 18, 14450, AÑORA, CÓRDOBA</td><td align="center">669470846</td><td align="center">957151526</td><td>H.MADRIDGARCIA@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2924','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/06/2017</td><td align="center">3131</td><td align="center">SOLICE ENERGY SLU</td><td align="center">SOLICE</td><td align="center">CALLE ESCRITROR CRISTOBAL DE MESA Nº 10 PLANTA 1 PUERTA 2, 14007, CÓRDOBA, CÓRDOBA</td><td align="center">957408908</td><td align="center">-</td><td>ANGEL.PAVON@SOLICE.ES</td><td align="center">WWW.SOLICE.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3131','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/07/2017</td><td align="center">3142</td><td align="center">SOLUCIONES INTEGRALES DE LA CONSTRUCCION PRICORP SL</td><td align="center">PRICORP SL</td><td align="center">CALLE LOS ALDERETES Nº 14, 14004, CÓRDOBA, CÓRDOBA</td><td align="center">957764856</td><td align="center">957235199</td><td>ADMINISTRACION@PRICORPSL.COM</td><td align="center">WWW.PRICORPSL.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3142','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">26/09/2019</td><td align="center">5140</td><td align="center">CLIMAQUATRO SDAD COOP ANDALUZA</td><td align="center">CLIMAQUATRO SCA</td><td align="center">AVENIDA MARIA AUXILIADORA Nº 7, 14700, PALMA DEL RÍO, CÓRDOBA</td><td align="center">692893188</td><td align="center">-</td><td>CLIMAQUATRO@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5140','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">26/10/2017</td><td align="center">3512</td><td align="center">INMAELEC S TB T SL</td><td align="center">INMAELEC AT BT SL</td><td align="center">CALLE SIMÓN CARPINTERO PARC.1Y2 NAVE 7A Nº 7 LETRA A, 14014, CÓRDOBA, CÓRDOBA</td><td align="center">639875330</td><td align="center">-</td><td>INMAELEC@INMAELEC.COM</td><td align="center">WWW.INMAELEC.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3512','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">27/03/2017</td><td align="center">259</td><td align="center">AULA NATURA MEDIOAMBIENTE S.L.</td><td align="center">SOLAR NATURA</td><td align="center">CALLE BUJALANCE, POL. IND. DEHESA DE CEBRIÁN Nº 39, 14420, VILLAFRANCA DE CÓRDOBA, CÓRDOBA</td><td align="center">957182007</td><td align="center">-</td><td>INFO@SOLARNATURA.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=259','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">27/03/2019</td><td align="center">4922</td><td align="center">DECORACIONES Y PROYECTOS CEBRERO SL</td><td align="center">CEBRERO</td><td align="center">CALLE FAUSTO GARCIA TENA Nº 57 LETRA A, 14100, CARLOTA, LA, CÓRDOBA</td><td align="center">957322690</td><td align="center">-</td><td>INFO@CEBRERO.COM</td><td align="center">WWW.CEBRERO.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4922','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">27/03/2019</td><td align="center">4921</td><td align="center">MARIA CONCEPCION GARCIA UREÑA</td><td align="center">CONCHI GARCIA </td><td align="center">CALLE JOSÉ ECHEGARAY  Nº 19, 14270, HINOJOSA DEL DUQUE, CÓRDOBA</td><td align="center">677639224</td><td align="center">-</td><td>CONCHI329@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4921','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">27/04/2017</td><td align="center">1837</td><td align="center">JOSE PEÑALVER JIMENEZ</td><td align="center">JP PROYECTOS &amp; LICENCIAS</td><td align="center">CALLE AGUILAR Nº 78 PLANTA 2, 14500, PUENTE GENIL, CÓRDOBA</td><td align="center">670775395</td><td align="center">-</td><td>JP@JOSEPENALVER.ES</td><td align="center">WWW.JOSEPENALVER.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1837','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">27/04/2018</td><td align="center">3989</td><td align="center">FRANCISCO JAVIER FERNANDEZ LOPEZ</td><td align="center">ALUMINIOS PACO FERNANDEZ</td><td align="center">CALLE PERIODISTA RODRIGUEZ MESA Nº 5 PLANTA 5 PUERTA 2, 14010, CÓRDOBA, CÓRDOBA</td><td align="center">627527280</td><td align="center">-</td><td>ALUMINIOSPACOFERNANDEZ@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3989','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">27/06/2018</td><td align="center">4440</td><td align="center">JOSE LUIS ASENCIO ALVAREZ</td><td align="center">ARQUITECTURA TÉCNICA AVANZADA</td><td align="center">CALLE MADRE CARMEN  Nº 3 ESCALERA 1 PUERTA E, 14700, PALMA DEL RÍO, CÓRDOBA</td><td align="center">651884138</td><td align="center">-</td><td>JOSELUISGARO@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4440','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">27/06/2018</td><td align="center">4442</td><td align="center">VERLIN INTEGRACIONES SL</td><td align="center">VERLIN INTEGRACIONES S.L.</td><td align="center">CALLE REYES CATOLICOS Nº 4 PLANTA 5 PUERTA D, 14001, CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">629829121</td><td>VERLIN@TELEFONICA.NET</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4442','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">27/08/2019</td><td align="center">5159</td><td align="center">ANDALUZA DE REPRESENTACION GESTIONES Y OBRAS SA</td><td align="center">ARGONSA</td><td align="center">CALLE BLAS INFANTE Nº 2 PLANTA 1 PUERTA B, 14600, MONTORO, CÓRDOBA</td><td align="center">957162802</td><td align="center">957953479</td><td>INFO@ARGONSA.COM</td><td align="center">WWW.ARGONSA.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5159','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">27/09/2019</td><td align="center">5253</td><td align="center">FRANCISCO ANTONIO CALLEJAS DELGADO</td><td align="center">EFC ARQUITECTOS</td><td align="center">AVENIDA DIPUTACIÓN  Nº 15, 14700, PALMA DEL RÍO, CÓRDOBA</td><td align="center">620263366</td><td align="center">-</td><td>FRANCALLEJA@ARQUITECTO.COM</td><td align="center">WWW.EFCARQUITECTOS.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5253','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">27/12/2019</td><td align="center">5471</td><td align="center">BOBINADOS DE LA SUBBETICA SL</td><td align="center">BOBISUB</td><td align="center">CALLE DEL METAL Nº 5, 14900, LUCENA, CÓRDOBA</td><td align="center">957591235</td><td align="center">-</td><td>BOBISUB@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5471','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">27/12/2019</td><td align="center">5476</td><td align="center">CARLOS CRIADO GIRALDO</td><td align="center">CARLOS CRIADO GIRALDO</td><td align="center">CALLE JOS¿DE GALVEZ Y ARANDA Nº 52, 14014, CÓRDOBA, CÓRDOBA</td><td align="center">639684181</td><td align="center">-</td><td>INFO@INGESCOR.ES</td><td align="center">INGESCOR.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5476','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">28/01/2020</td><td align="center">5505</td><td align="center">SUITELEC SERVICIOS SL</td><td align="center">SUITELEC</td><td align="center">CALLE ALTOZANO Nº 6, 14610, CÓRDOBA, CÓRDOBA</td><td align="center">957320647</td><td align="center">-</td><td>SUITELEC@HOTMAIL.ES</td><td align="center">WWW.SUITELEC.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5505','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">28/03/2017</td><td align="center">1259</td><td align="center">ANTONIO MANUEL POLO CEREZO</td><td align="center">ANTONIO POLO CEREZO</td><td align="center">AVENIDA DE ITALIA Nº 15, 14550, MONTILLA, CÓRDOBA</td><td align="center">659127105</td><td align="center">957651016</td><td>ANTONIOPOLOAIRELECTRIC@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1259','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">28/03/2017</td><td align="center">1145</td><td align="center">LEUK SOLUCIONES ENERGETICAS SL</td><td align="center">LEUK SOLUCIONES ENERGETICAS</td><td align="center">CALLE ASTRONOMA CECILIA PAYNE, EDIF ALDEBARAN, M.1.5. Nº 1, 14014, CÓRDOBA, CÓRDOBA</td><td align="center">957740080</td><td align="center">-</td><td>JCLLORENTE@LEUK.ES</td><td align="center">WWW.LEUK.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1145','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">28/05/2018</td><td align="center">4255</td><td align="center">ANDRES ANDREO DIAZ</td><td align="center">ALUMINIOS ANDREO</td><td align="center">CALLE ING. TORRES QUEVEDO Nº 10, 14013, CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">957429238</td><td>ALUMINIOSANDREO@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4255','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">28/05/2018</td><td align="center">4269</td><td align="center">FERNANDO GIL MORENO</td><td align="center">CONSTRUCCIONES METALICAS GIL MORENO</td><td align="center">POLIGONO POLIGONO DE CHINALES  Nº 20 PUERTA D, 14007, CÓRDOBA, CÓRDOBA</td><td align="center">692399482</td><td align="center">-</td><td>FERNANDOGILMORENO@HOTMAIL.COM</td><td align="center">WWW.CONSTRUCCIONESMETALICASGILMORENO.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4269','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">28/05/2018</td><td align="center">4319</td><td align="center">INFRAESTRUCTURAS CONSTRUCCION Y ENERGIA SL</td><td align="center">ICYE</td><td align="center">AVENIDA VÍA AUGUSTA Nº 3 PLANTA 3 PUERTA 2, 14006, CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">665264306</td><td>INFO@ICYE.ES</td><td align="center">WWW.ICYE.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4319','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">28/05/2018</td><td align="center">4289</td><td align="center">MIGUEL ANGEL MARQUEZ BAJO</td><td align="center">TALLERES MARQUEZ BAJO</td><td align="center">CALLE MADRID Nº 39, 14400, POZOBLANCO, CÓRDOBA</td><td align="center">957770378</td><td align="center">957770378</td><td>INFO@TALLERESMARQUEZBAJO.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4289','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">28/10/2019</td><td align="center">5336</td><td align="center">AVILES Y GONZALEZ INSTALACIONES SL</td><td align="center">AYG INSTALACIONES</td><td align="center">CALLE CHURRUCA Nº 19, 14500, PUENTE GENIL, CÓRDOBA</td><td align="center">607190863</td><td align="center">-</td><td>AYG@AYGINSTALACIONES.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5336','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">28/11/2017</td><td align="center">3523</td><td align="center">RECTIFICADOS Y CONTROL SL</td><td align="center">RECTIFICADOS Y CONTROL S.L.</td><td align="center">POLIGONO INDUSTRIAL QUINTOS PARCELA 4B NAVE 2, 14005, CÓRDOBA, CÓRDOBA</td><td align="center">957324772</td><td align="center">957324568</td><td>ADMINISTRACION@GRUPOREYCON.COM</td><td align="center">HTTP://WWW.GRUPOREYCON.COM/ES/</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3523','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">28/11/2017</td><td align="center">3567</td><td align="center">SOLAR DEL VALLE INGENIERIA E INSTALACIONES SL</td><td align="center">SOLAR DEL VALLE INGENIERÍA E INSTALACIONES, S.L. </td><td align="center">CALLE JUAN BAUTISTA ESCUDERO (POLIGONO LAS QUEMADAS) Nº 213 LETRA A, 14400, CÓRDOBA, CÓRDOBA</td><td align="center">957773072</td><td align="center">900101742</td><td>SOLARDELVALLE@SOLARDELVALLE.ES</td><td align="center">WWW.SOLARDELVALLE.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3567','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">28/12/2018</td><td align="center">4745</td><td align="center">ELEBOBISA MONTAJES ELECTRICOS SL</td><td align="center">ELEBOBISA MONTAJES ELECTRICOS SL</td><td align="center">CALLE ALICATADORES Nº 24, 14013, CÓRDOBA, CÓRDOBA</td><td align="center">957420737</td><td align="center">-</td><td>SANDRA@ELEBOBISA.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4745','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">29/05/2017</td><td align="center">2728</td><td align="center">FRANCISCO JAVIER MORENO MORALES</td><td align="center">FRANCISCO JAVIER MORENO MORALES</td><td align="center">CALLE RAFAEL ALBERTI Nº 18, 14840, CASTRO DEL RÍO, CÓRDOBA</td><td align="center">-</td><td align="center">655556397</td><td>VANSOL@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2728','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">29/05/2017</td><td align="center">2739</td><td align="center">JOSE IGNACIO PEREZ MELLADO</td><td align="center">JOSÉ IGNACIO PÉREZ MELLADO </td><td align="center">CALLE MAESTRA  Nº 82, 14290, FUENTE OBEJUNA, CÓRDOBA</td><td align="center">-</td><td align="center">687870581</td><td>JOSY872@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2739','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">29/05/2017</td><td align="center">2593</td><td align="center">MANUEL LÓPEZ CABALLERO</td><td align="center">MANUEL LOPEZ CABALLERO</td><td align="center">CARRETERA AVILA-CORDOBA KM 355, 14470, VISO, EL, CÓRDOBA</td><td align="center">957127315</td><td align="center">957127315</td><td>MANUELLOPEZCABALLEROMLC@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2593','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">29/05/2017</td><td align="center">2466</td><td align="center">ANTONIO JOSE MENDOZA JIMENEZ</td><td align="center">TOLDOS MENDOZA</td><td align="center">POLIGONO ATALAYA PARCELA 29 Nº 28, 14940, CABRA, CÓRDOBA</td><td align="center">657850700</td><td align="center">-</td><td>TOLDOSMENDOZA@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2466','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">29/06/2018</td><td align="center">4421</td><td align="center">ELECTRICIDAD HINOJOSA SL</td><td align="center">ELECTRICIDAD HINOJOSA, SL</td><td align="center">CALLE ARTESANOS, NAVES 9 Y 10, 14270, HINOJOSA DEL DUQUE, CÓRDOBA</td><td align="center">957140024</td><td align="center">-</td><td>ADMINISTRACION@ELECTRICIDADHINOJOSA.COM</td><td align="center">WWW.ELECTRICIDADHINOJOSA.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4421','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">29/09/2017</td><td align="center">3370</td><td align="center">PROMOCIONES Y CONSTRUCCIONES DOPESUR SL</td><td align="center">PROMOCIONES Y CONSTRUCCIONES DOPESUR SL</td><td align="center">CALLE FEDRICO GARCIA LORCA Nº 34, 14510, MORILES, CÓRDOBA</td><td align="center">667430932</td><td align="center">-</td><td>MANUEL.DOBLAS@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3370','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">29/10/2018</td><td align="center">4656</td><td align="center">JACENA 2006 SL</td><td align="center">-</td><td align="center">PLAZA RAFAEL ALBERTI Nº 6, 14420, VILLAFRANCA DE CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">616613569</td><td>JACENA2006@GMAIL.COM</td><td align="center">WWW.JACENA.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4656','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">29/10/2019</td><td align="center">5297</td><td align="center">FERPIAR SOLUCIONES ENERGETICAS SL</td><td align="center">FERPIAR SOLUCIONES ENERGÉTICAS S.L.</td><td align="center">AVENIDA EXTREMADURA Nº 75, 14900, LUCENA, CÓRDOBA</td><td align="center">957500391</td><td align="center">-</td><td>FERPIAR@INSTALACIONESFB.COM</td><td align="center">WWW.INSTALACIONESFB.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5297','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">30/01/2017</td><td align="center">242</td><td align="center">CRISTALERIA LUMAIDA SL</td><td align="center">CRISTALERIA LUMAIDA S.L.</td><td align="center">CALLE TORRES QUEVEDO Nº 58, 14730, POSADAS, CÓRDOBA</td><td align="center">957630736</td><td align="center">957631818</td><td>CRISTALERIALUMAIDA@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=242','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">30/01/2017</td><td align="center">229</td><td align="center">ANTONIO MARTIN OBEJO</td><td align="center">TALLERES MARTÍN OBEJO</td><td align="center">CARRETERA CARRETERA A POZOBLANCO KM 8, 14412, PEDROCHE, CÓRDOBA</td><td align="center">610744658</td><td align="center">-</td><td>TALLERESMARTINOBEJO@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=229','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">30/03/2017</td><td align="center">1629</td><td align="center">FRANCISCO JAVIER MOLERO REDONDO</td><td align="center">FJ MOLERO INSTALACIONES</td><td align="center">CALLE LUCENA Nº 46 PLANTA B, 14960, RUTE, CÓRDOBA</td><td align="center">627921090</td><td align="center">-</td><td>MOLEROREDONDO@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1629','#Detalle');"><img src="include/img/info.png"></a></center></td></tr></tbody>
+</table><div class="dataTables_info" id="lAtAbla_info" role="status" aria-live="polite">Mostrando 301 a 400 de 424 registros</div><div class="dataTables_paginate paging_simple_numbers" id="lAtAbla_paginate"><a class="paginate_button previous" aria-controls="lAtAbla" data-dt-idx="0" tabindex="0" id="lAtAbla_previous">Anterior</a><span><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="1" tabindex="0">1</a><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="2" tabindex="0">2</a><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="3" tabindex="0">3</a><a class="paginate_button current" aria-controls="lAtAbla" data-dt-idx="4" tabindex="0">4</a><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="5" tabindex="0">5</a></span><a class="paginate_button next" aria-controls="lAtAbla" data-dt-idx="6" tabindex="0" id="lAtAbla_next">Siguiente</a></div></div>
+</div>
+Ya puedes <a href="https://incentivos.agenciaandaluzadelaenergia.es/Orden2016SIG/" target="_blank">acceder</a> para <a href="https://www.agenciaandaluzadelaenergia.es/soporteinteractivoOrden/como-ser-entidad-colaboradora/alta-en-localizador-geografico/
+" target="_blank">dar de alta</a> tu entidad colaboradora en el localizador geográfico de entidades colaboradoras.
+</center>
+<!-- 
+<div id="Detalle" style="border-style: solid; border-width: 1px;">
+&Aacute;rea de Detalle
+</div>
+ -->
+ 
+<br>
+<div style="float:right;">
+<script type="text/javascript">
+//<![CDATA[
+var  today = new Date();
+var anno = today.getFullYear();
+var m = today.getMonth() + 1;
+var mes = (m < 10) ? '0' + m : m;
+var h=today.getHours();
+var hora= (h < 10) ? '0' + h : h;
+var min=today.getMinutes();
+var minutos= (min < 10) ? '0' + min : min;
+  document.write('<b>Documento actualizado a:</b> '+today.getDate(),'/' +mes,'/'+anno+"-"+hora+":"+minutos);
+//]]> 
+</script><b>Documento actualizado a:</b> 16/02/2021-12:20</div>
+<br>
+<!-- Pie de página -->
+<hr>
+<table cellpadding="0" cellspacing="0" style="width: 98%"> <!--Tabla de pie de página -->
+<tbody><tr>
+	<td style="width: 50%; text-align: center; padding-left: 150px" class="fondo_pie letra_politica">
+	<img id="cabeceraUE" src="include/img/logoPie.png">
+	</td>
+	<td style="width: 50%; text-align: left;" class="fondo_pie letra_politica">
+	Agencia Andaluza de la Energía - <a href="https://www.agenciaandaluzadelaenergia.es/soporteinteractivoOrden/" style="color: #330000">Resuelve tus dudas</a> - <a href="https://www.agenciaandaluzadelaenergia.es/LOPD" style="color: #330000">LOPD</a>
+	<br>Optimizada para navegadores Google Chrome ó Mozilla Firefox.
+	</td>
+</tr>
+</tbody></table>
+<hr>
+
+
+</body></html>

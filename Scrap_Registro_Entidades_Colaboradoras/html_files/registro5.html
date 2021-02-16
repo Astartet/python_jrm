@@ -1,0 +1,719 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Registro de Entidades Colaboradoras</title>
+<link rel="stylesheet" type="text/css" href="include/css/jquery.dataTables.css">
+<!-- jQuery -->
+<script type="text/javascript" charset="utf8" src="include/js/jquery.js"></script>
+  
+<!-- DataTables -->
+<script type="text/javascript" charset="utf8" src="include/js/jquery.dataTables.min.js"></script>
+<!-- <script type="text/javascript" src="./include/js/datosSucursales.js"></script> -->
+<script type="text/javascript" charset="utf8" src="./include/js/listados.js"></script>
+<script type="text/javascript">
+$(document).ready( function () {
+    $(document).on("keypress", "form", function(event) { 
+        if (event.keyCode == 13) {
+            $('#filt').click();
+            return false;
+        }
+    });
+    
+    $('#filt').click(function(event) {
+        var NOMBREvar = $('#NOMBRE').val();
+        var LINEAvar = $('#LINEA').val();
+        var COMOvar = $('#COMO').val();
+        var CATEGvar = $('#CATEG').val();
+        var PROVvar = $('#PROV').val();
+        var TIPOLvar = $('#TIPOL').val();
+        var LOCALvar = $('#LOCALIDAD').val();
+        var ACTvar = $('#ACT').val();
+        var cadena = NOMBREvar + LINEAvar + COMOvar + CATEGvar + PROVvar + TIPOLvar + LOCALvar + ACTvar;
+
+        if (cadena == "") {
+            alert ("Introduce criterios de búsqueda");
+        } else if (NOMBREvar.length > 0 && NOMBREvar.length < 2) {
+            alert ("Introduce al menos 2 caracteres para buscar por nombre comercial");
+        } else {
+            //la linea de abajo es nomenclatura JavaScript
+            //document.getElementById('cuerpo').innerHTML="<tr><td></td><TD></TD><TD></TD><td></td><td></td><td></td><td></td><td></td><td></td><td><center><img src='images/loader.gif' HEIGHT=80></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+            //la linea de abajo es nomenclatura JQuery
+            $('#cuerpo').html("<tr><td></td><td></td><td></td><td></td><td><center><img src='include/img/loader.gif' HEIGHT=80></td><td></td><td></td><td></td><td></td><td></td></tr>");
+            //document.getElementById('eSpera').innerHTML ="<center><img src='images/loader.gif' HEIGHT=80></center>";
+  
+  		    // Si en vez de por post lo queremos hacer por get, cambiamos el $.post por $.get
+			$.post('AjaxServlet', {
+				NOMBRE : NOMBREvar,
+				LINEA : LINEAvar,
+				COMO : COMOvar,
+				CATEG : CATEGvar,
+				PROV : PROVvar,
+				TIPOL : TIPOLvar,
+				LOCALIDAD : LOCALvar,
+				ACT : ACTvar,
+				ACCION:"FILTRAR"
+			}, function(responseText) {
+				ertable.destroy();
+				
+				$('#cuerpo').html(responseText);
+				//laTable.ajax.reload();
+				ertable=$('#lAtAbla').DataTable({
+					"language": {
+						"sLengthMenu": "Mostrar _MENU_ registros por página",
+						"sZeroRecords": "Sin registros",
+						"sInfo": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+						"sInfoEmtpy": "Mostrando de 0 a 0 de 0 registros",
+						"infoEmpty": "Mostrando de 0 a 0 de 0 registros",
+						"sInfoFiltered": "(filtrado de _MAX_ total registros)",
+						"paginate": {
+					        "first":      "Primero",
+					        "last":       "Último",
+					        "next":       "Siguiente",
+					        "previous":   "Anterior"
+					    },
+					    "search":         "Búsqueda:"
+					}
+				});
+				//document.getElementById('eSpera').innerHTML ="";
+			});
+		}
+	});
+    
+    $('#exportar').click(function(event){
+        //$('#cuerpo').html("<tr><td></td><TD></TD><TD></TD><td></td><td></td><td></td><td></td><td></td><td></td><td><center><img src='images/loader.gif' HEIGHT=80></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>");
+        var NOMBREvar = $('#NOMBRE').val();
+        var LINEAvar = $('#LINEA').val();
+        var COMOvar = $('#COMO').val();
+        var CATEGvar = $('#CATEG').val();
+        var PROVvar = $('#PROV').val();
+        var TIPOLvar = $('#TIPOL').val();
+        var LOCALvar = $('#LOCALIDAD').val();
+        var ACTvar = $('#ACT').val();
+        var cadena=NOMBREvar + LINEAvar + COMOvar + CATEGvar + PROVvar + TIPOLvar + LOCALvar + ACTvar;
+        if (cadena == "") {
+            $('#cuerpo').html("");
+            alert ("Introduce criterios de búsqueda");
+            //document.getElementById('eSpera').innerHTML ="";
+        } else {
+            // Si en vez de por post lo queremos hacer por get, cambiamos el $.post por $.get
+			/* $.post('AjaxServlet', {
+				DNI: DNIvar,
+				NOMBRE : NOMBREvar,
+				APLL1: APLL1var,
+				APLL2: APLL2var,
+				CIF: CIFvar,
+				EMPRESA: EMPRESAvar,
+				ACCION:"EXPORTAR"
+			}); */
+			document.formFilt.action="AjaxServlet";
+			document.formFilt.submit();
+			
+			}
+		 //$('#cuerpo').html("<tr><td></td><TD></TD><TD></TD><td></td><td></td><td></td><td></td><td></td><td></td><td><center>Resultados exportados</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>");
+    });
+    
+    var ertable=$('#lAtAbla').DataTable({
+        "language": {
+            "sLengthMenu"   : "Mostrar _MENU_ registros por página",
+            "sZeroRecords"  : "Sin registros",
+            "sInfo"         : "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "sInfoEmtpy"    : "Mostrando de 0 a 0 de 0 registros",
+            "infoEmpty"     : "Mostrando de 0 a 0 de 0 registros",
+            "sInfoFiltered" : "(filtrado de _MAX_ total registros)",
+            "paginate": {
+                "first"     : "Primero",
+                "last"      : "Último",
+                "next"      : "Siguiente",
+                "previous"  : "Anterior"
+            },
+            "search"        : "Búsqueda:"
+        }
+    });
+});
+
+function cargaDiv(urls,ids){
+	//$(id).load(url);
+	//$(ids).load(urls);
+	window.open(urls);
+	//document.getElementById('DetallePg').load('Detalle.html');
+}
+</script>
+
+</head>
+<body style="font-size:100%;">
+<center>
+<img src="include/img/cabecera.jpg" border="1" width="75%" style="vertical-align: top;">
+</center>
+
+<center><h3><i><u>REGISTRO DE ENTIDADES COLABORADORAS</u></i></h3><br>
+<!-- <div id="eSpera" style="overflow:auto;align:center; padding:20px;"></div> -->
+Conoce las entidades colaboradoras en el listado de abajo, las cuales puede filtrar por distintos campos que se muestran a continuación.</center>
+<div id="form" "="" style="text-align: center;background-color:#eeeeee;">
+<form name="formFilt" action="" method="POST">
+<hr>
+<b>Filtros Entidades Colaboradoras:</b>
+<center>
+<table width="800">
+<tbody><tr>
+<td align="center" width="200px">Nombre Comercial/Razón Social:</td>
+<td align="right" width="200px"><input type="text" name="NOMBRE" value="" id="NOMBRE" style="width: 200px;"></td>
+<td align="center" width="200px">Línea:</td>
+<td align="right" width="200px">
+	 <select name="LINEA" value="" id="LINEA" onchange="javascript:cargarCategoriaLista(document.getElementById('LINEA'));" style="width: 200px;">
+	<!--<select name="LINEA" value="" id="LINEA" style="width: 200px;">-->
+	<option value="">--Selecciona Línea--</option>
+				<option value="CONSTRUCCIÓN SOSTENIBLE">CONSTRUCCIÓN SOSTENIBLE</option><option value="PYME SOSTENIBLE">PYME SOSTENIBLE</option><option value="REDES INTELIGENTES">REDES INTELIGENTES</option>
+	</select>
+</td>
+</tr>
+<tr>
+<td align="center" width="200px">Cómo interviene:</td>
+<td align="right" width="200px"><select name="COMO" value="" id="COMO" style="width: 200px;">
+<option value="">--Selecciona Valor--</option>
+<option value="C_T_ACTIVIDAD_AUDITORIA">Elaboración del certificado previo y posterior a la ejecución</option>
+<option value="C_T_ACTIVIDAD_SUMINISTRA">Suministro de bienes o prestación de servicios incentivables</option>
+<option value="C_T_ACTIVIDAD_EJECUTORA">Ejecución material de las actuaciones incentivables</option>
+<option value="C_T_ACTIVIDAD_PREST_SERV_ENERG">Prestación de servicios energéticos en el ámbito de las categorías C de conceptos incentivables</option>
+</select></td>
+<td align="center" width="200px">Categoría:</td>
+<td align="right" width="200px">
+<div id="div_Categ2"><select style="width: 200px;" id="CATEG" name="CATEG" onchange="javascript:cargarTipologiaLista(document.getElementById('CATEG'));">
+
+
+<option value="">--Selecciona Categoria--</option><option value="A.1. Aprovechamiento eficiente de recursos autóctonos o residuales">A.1. Aprovechamiento eficiente de recursos autóctonos o residuales</option><option value="A.2. Mejora de la eficiencia energética y mayor contribución a la protección ambiental">A.2. Mejora de la eficiencia energética y mayor contribución a la protección ambiental</option><option value="B. Procesos o soluciones inteligentes para la evaluación y la gestión energética">B. Procesos o soluciones inteligentes para la evaluación y la gestión energética</option><option value="C. Actuaciones de mejora energética en los procesos a través de servicios energéticos">C. Actuaciones de mejora energética en los procesos a través de servicios energéticos</option></select></div>
+</td>
+</tr>
+<tr>
+<td align="center" width="200px">Provincia:</td>
+<td align="right" width="200px">
+<div id="div_Prov2">
+<select name="PROV" value="" id="PROV" onchange="javascript:cargarMuniLista(document.getElementById('PROV'));" style="width: 200px;">
+<!-- <select name="PROV" value="" id="PROV" style="width: 200px;"> -->
+<option value="">--Selecciona Provincia--</option>
+				<option value="ALAVA">ALAVA</option><option value="ALBACETE">ALBACETE</option><option value="ALICANTE">ALICANTE</option><option value="ALMERÍA">ALMERÍA</option><option value="ASTURIAS">ASTURIAS</option><option value="BADAJOZ">BADAJOZ</option><option value="BALEARES">BALEARES</option><option value="BARCELONA">BARCELONA</option><option value="BURGOS">BURGOS</option><option value="CACERES">CACERES</option><option value="CÁDIZ">CÁDIZ</option><option value="CANTABRIA">CANTABRIA</option><option value="CASTELLON">CASTELLON</option><option value="CIUDAD REAL">CIUDAD REAL</option><option value="CÓRDOBA">CÓRDOBA</option><option value="CORUÑA (LA)">CORUÑA (LA)</option><option value="CUENCA">CUENCA</option><option value="GERONA">GERONA</option><option value="GRANADA">GRANADA</option><option value="GUADALAJARA">GUADALAJARA</option><option value="GUIPUZCOA">GUIPUZCOA</option><option value="HUELVA">HUELVA</option><option value="JAÉN">JAÉN</option><option value="LUGO">LUGO</option><option value="MADRID">MADRID</option><option value="MALAGA">MALAGA</option><option value="MURCIA">MURCIA</option><option value="NAVARRA">NAVARRA</option><option value="PALMAS (LAS)">PALMAS (LAS)</option><option value="PONTEVEDRA">PONTEVEDRA</option><option value="RIOJA (LA)">RIOJA (LA)</option><option value="SALAMANCA">SALAMANCA</option><option value="SEGOVIA">SEGOVIA</option><option value="SEVILLA">SEVILLA</option><option value="TARRAGONA">TARRAGONA</option><option value="TOLEDO">TOLEDO</option><option value="VALENCIA">VALENCIA</option><option value="VALLADOLID">VALLADOLID</option><option value="VIZCAYA">VIZCAYA</option><option value="ZARAGOZA">ZARAGOZA</option>
+</select>
+</div>
+</td>
+<td align="center" width="200px">Tipología:</td>
+<td align="right" width="200px">
+	<div id="div_Tip2">
+	<select name="TIPOL" value="" id="TIPOL" onchange="javascript:cargarActuacionesLista(document.getElementById('TIPOL'));" style="width: 200px;">
+	<option value="">--Selecciona Tipología--</option>
+				<option value="A.1.1. Generación de energía mediante el aprovechamiento de energías renovables">A.1.1. Generación de energía mediante el aprovechamiento de energías renovables</option><option value="A.1.1. Soluciones tradicionales para el aislamiento en cerramientos, cubiertas o suelo.">A.1.1. Soluciones tradicionales para el aislamiento en cerramientos, cubiertas o suelo.</option><option value="A.1.2. Desarrollo de la cadena de la biomasa, mediante proyectos de producción y/o logística de la biomasa y biocombustibles.">A.1.2. Desarrollo de la cadena de la biomasa, mediante proyectos de producción y/o logística de la biomasa y biocombustibles.</option><option value="A.1.2. Disposición de ventanas o huecos acristalados térmicamente eficientes ">A.1.2. Disposición de ventanas o huecos acristalados térmicamente eficientes </option><option value="A.1.3. Aprovechamiento de energía residual">A.1.3. Aprovechamiento de energía residual</option><option value="A.1.3. Medidas de protección solar o sombreado ">A.1.3. Medidas de protección solar o sombreado </option><option value="A.2. Aprovechamiento de la luz natural y su combinación con iluminación artificial en proyectos de arquitectura de la luz">A.2. Aprovechamiento de la luz natural y su combinación con iluminación artificial en proyectos de arquitectura de la luz</option><option value="A.2.1. Reformas de instalaciones o procesos para la mayor eficiencia energética">A.2.1. Reformas de instalaciones o procesos para la mayor eficiencia energética</option><option value="A.2.2. Mejora de las cogeneraciones existentes y promoción de la cogeneración de alta eficiencia">A.2.2. Mejora de las cogeneraciones existentes y promoción de la cogeneración de alta eficiencia</option><option value="A.2.3. Sustitución de combustibles o energías tradicionales por otros menos contaminantes.">A.2.3. Sustitución de combustibles o energías tradicionales por otros menos contaminantes.</option><option value="A.3. Soluciones bioclimáticas o con alto valor añadido">A.3. Soluciones bioclimáticas o con alto valor añadido</option><option value="A.4.1. Sistemas energéticamente eficientes para la generación de calor">A.4.1. Sistemas energéticamente eficientes para la generación de calor</option><option value="A.4.2. Sistemas para la generación de electricidad o la cogeneración de calor y electricidad">A.4.2. Sistemas para la generación de electricidad o la cogeneración de calor y electricidad</option><option value="A.5.1.Reforma energética en la climatización, ventilación o refrigeración usada en edificios">A.5.1.Reforma energética en la climatización, ventilación o refrigeración usada en edificios</option><option value="A.5.2. Reforma energética en instalaciones de agua en los edificios y los servicios públicos">A.5.2. Reforma energética en instalaciones de agua en los edificios y los servicios públicos</option><option value="A.6.1. Iluminación interior
+">A.6.1. Iluminación interior
+</option><option value="A.6.2. Iluminación exterior y del paisaje">A.6.2. Iluminación exterior y del paisaje</option><option value="B. Procesos o soluciones inteligentes para la evaluación y la gestión energética">B. Procesos o soluciones inteligentes para la evaluación y la gestión energética</option><option value="B. Procesos o soluciones inteligentes para la evaluación y la gestión energética de los edificios y las ciudades
+">B. Procesos o soluciones inteligentes para la evaluación y la gestión energética de los edificios y las ciudades
+</option><option value="B.1.1. Instalaciones para el suministro de combustibles alternativos
+">B.1.1. Instalaciones para el suministro de combustibles alternativos
+</option><option value="B.1.2. Aprovechamiento de energías renovables para la movilidad sostenible
+">B.1.2. Aprovechamiento de energías renovables para la movilidad sostenible
+</option><option value="B.2.1. Adquisición o transformación de vehículos energéticamente eficientes">B.2.1. Adquisición o transformación de vehículos energéticamente eficientes</option><option value="C. Actuaciones de mejora energética en edificios e instalaciones a través de servicios energéticos">C. Actuaciones de mejora energética en edificios e instalaciones a través de servicios energéticos</option><option value="C. Actuaciones de mejora energética en los procesos a través de servicios energéticos">C. Actuaciones de mejora energética en los procesos a través de servicios energéticos</option><option value="C. Actuaciones para la descarbonización del transporte a través de servicios energéticos">C. Actuaciones para la descarbonización del transporte a través de servicios energéticos</option>
+	</select>
+	</div>
+</td>
+</tr>
+<tr>
+<td align="center" width="200px">Localidad:</td>
+<td align="right" width="200px">
+<div id="div_municipio2">
+<select name="LOCALIDAD" value="" id="LOCALIDAD" onchange="javascript:cargarProvLista(document.getElementById('LOCALIDAD'));" style="width: 200px;">
+<option value="">--Selecciona Municipio--</option>
+				<option value="ABLA">ABLA</option><option value="ABRERA">ABRERA</option><option value="ADAMUZ">ADAMUZ</option><option value="ADRA">ADRA</option><option value="AGUADULCE">AGUADULCE</option><option value="AGUILAR DE LA FRONTERA">AGUILAR DE LA FRONTERA</option><option value="ALAMEDA">ALAMEDA</option><option value="ALBACETE">ALBACETE</option><option value="ALBAIDA DEL ALJARAFE">ALBAIDA DEL ALJARAFE</option><option value="ALBOLOTE">ALBOLOTE</option><option value="ALBOX">ALBOX</option><option value="ALBUÑÁN">ALBUÑÁN</option><option value="ALBUÑOL">ALBUÑOL</option><option value="ALCALÁ DE GUADAÍRA">ALCALÁ DE GUADAÍRA</option><option value="ALCALÁ DE HENARES">ALCALÁ DE HENARES</option><option value="ALCALÁ DE LOS GAZULES">ALCALÁ DE LOS GAZULES</option><option value="ALCALÁ DEL RÍO">ALCALÁ DEL RÍO</option><option value="ALCALÁ DEL VALLE">ALCALÁ DEL VALLE</option><option value="ALCALÁ LA REAL">ALCALÁ LA REAL</option><option value="ALCANTARILLA">ALCANTARILLA</option><option value="ALCÀSSER">ALCÀSSER</option><option value="ALCAUDETE">ALCAUDETE</option><option value="ALCÁZAR DE SAN JUAN">ALCÁZAR DE SAN JUAN</option><option value="ALCOBENDAS">ALCOBENDAS</option><option value="ALCOLEA">ALCOLEA</option><option value="ALCOLEA DEL RÍO">ALCOLEA DEL RÍO</option><option value="ALCÓNTAR">ALCÓNTAR</option><option value="ALCORCÓN">ALCORCÓN</option><option value="ALDEACENTENERA">ALDEACENTENERA</option><option value="ALFACAR">ALFACAR</option><option value="ALGABA, LA">ALGABA, LA</option><option value="ALGÁMITAS">ALGÁMITAS</option><option value="ALGAR">ALGAR</option><option value="ALGECIRAS">ALGECIRAS</option><option value="ALGODONALES">ALGODONALES</option><option value="ALHAMA DE ALMERÍA">ALHAMA DE ALMERÍA</option><option value="ALHAMA DE GRANADA">ALHAMA DE GRANADA</option><option value="ALHAURÍN DE LA TORRE">ALHAURÍN DE LA TORRE</option><option value="ALHAURÍN EL GRANDE">ALHAURÍN EL GRANDE</option><option value="ALHENDÍN">ALHENDÍN</option><option value="ALICANTE/ALACANT">ALICANTE/ALACANT</option><option value="ALICÚN DE ORTEGA">ALICÚN DE ORTEGA</option><option value="ALJARAQUE">ALJARAQUE</option><option value="ALMADÉN DE LA PLATA">ALMADÉN DE LA PLATA</option><option value="ALMANSA">ALMANSA</option><option value="ALMARGEN">ALMARGEN</option><option value="ALMEDINILLA">ALMEDINILLA</option><option value="ALMENDRALEJO">ALMENDRALEJO</option><option value="ALMENSILLA">ALMENSILLA</option><option value="ALMERÍA">ALMERÍA</option><option value="ALMODÓVAR DEL RÍO">ALMODÓVAR DEL RÍO</option><option value="ALMOGÍA">ALMOGÍA</option><option value="ALMONASTER LA REAL">ALMONASTER LA REAL</option><option value="ALMONTE">ALMONTE</option><option value="ALMUÑÉCAR">ALMUÑÉCAR</option><option value="ÁLORA">ÁLORA</option><option value="ALOSNO">ALOSNO</option><option value="ALQUIFE">ALQUIFE</option><option value="ALZIRA">ALZIRA</option><option value="ANDÚJAR">ANDÚJAR</option><option value="ANTAS">ANTAS</option><option value="ANTEQUERA">ANTEQUERA</option><option value="AÑORA">AÑORA</option><option value="ARACENA">ARACENA</option><option value="ARAHAL">ARAHAL</option><option value="ARBOLEAS">ARBOLEAS</option><option value="ARCHIDONA">ARCHIDONA</option><option value="ARCOS DE LA FRONTERA">ARCOS DE LA FRONTERA</option><option value="ARDALES">ARDALES</option><option value="ARENAS DEL REY">ARENAS DEL REY</option><option value="ARGANDA DEL REY">ARGANDA DEL REY</option><option value="ARJONA">ARJONA</option><option value="ARJONILLA">ARJONILLA</option><option value="ARMILLA">ARMILLA</option><option value="AROCHE">AROCHE</option><option value="ARRIATE">ARRIATE</option><option value="ARROYO DEL OJANCO">ARROYO DEL OJANCO</option><option value="ARROYOMOLINOS DE LEÓN">ARROYOMOLINOS DE LEÓN</option><option value="ATARFE">ATARFE</option><option value="AYAMONTE">AYAMONTE</option><option value="AZNALCÁZAR">AZNALCÁZAR</option><option value="AZUTÁN">AZUTÁN</option><option value="BADAJOZ">BADAJOZ</option><option value="BADALONA">BADALONA</option><option value="BAENA">BAENA</option><option value="BAEZA">BAEZA</option><option value="BAILÉN">BAILÉN</option><option value="BALANEGRA">BALANEGRA</option><option value="BAÑOS DE LA ENCINA">BAÑOS DE LA ENCINA</option><option value="BARAKALDO">BARAKALDO</option><option value="BARBATE">BARBATE</option><option value="BARBERÀ DEL VALLÈS">BARBERÀ DEL VALLÈS</option><option value="BARCELONA">BARCELONA</option><option value="BARRIOS, LOS">BARRIOS, LOS</option><option value="BARRO">BARRO</option><option value="BAZA">BAZA</option><option value="BEAS DE GRANADA">BEAS DE GRANADA</option><option value="BEAS DE SEGURA">BEAS DE SEGURA</option><option value="BEDMAR Y GARCÍEZ">BEDMAR Y GARCÍEZ</option><option value="BEGÍJAR">BEGÍJAR</option><option value="BELALCÁZAR">BELALCÁZAR</option><option value="BELMEZ">BELMEZ</option><option value="BENACAZÓN">BENACAZÓN</option><option value="BENAHADUX">BENAHADUX</option><option value="BENALMÁDENA">BENALMÁDENA</option><option value="BENALÚA">BENALÚA</option><option value="BENALUP-CASAS VIEJAS">BENALUP-CASAS VIEJAS</option><option value="BENAMAUREL">BENAMAUREL</option><option value="BENAMEJÍ">BENAMEJÍ</option><option value="BENAOJÁN">BENAOJÁN</option><option value="BENATAE">BENATAE</option><option value="BERJA">BERJA</option><option value="BIENSERVIDA">BIENSERVIDA</option><option value="BIENVENIDA">BIENVENIDA</option><option value="BOADILLA DEL MONTE">BOADILLA DEL MONTE</option><option value="BOLLULLOS DE LA MITACIÓN">BOLLULLOS DE LA MITACIÓN</option><option value="BOLLULLOS PAR DEL CONDADO">BOLLULLOS PAR DEL CONDADO</option><option value="BONARES">BONARES</option><option value="BORMUJOS">BORMUJOS</option><option value="BORNOS">BORNOS</option><option value="BOSQUE, EL">BOSQUE, EL</option><option value="BRENES">BRENES</option><option value="BRUNETE">BRUNETE</option><option value="BUJALANCE">BUJALANCE</option><option value="BURGUILLOS">BURGUILLOS</option><option value="CABEZAS DE SAN JUAN, LAS">CABEZAS DE SAN JUAN, LAS</option><option value="CABRA">CABRA</option><option value="CÁCERES">CÁCERES</option><option value="CÁDIAR">CÁDIAR</option><option value="CÁDIZ">CÁDIZ</option><option value="CÁJAR">CÁJAR</option><option value="CALAÑAS">CALAÑAS</option><option value="CALICASAS">CALICASAS</option><option value="CAMARMA DE ESTERUELAS">CAMARMA DE ESTERUELAS</option><option value="CAMAS">CAMAS</option><option value="CAMBIL">CAMBIL</option><option value="CAMPANA, LA">CAMPANA, LA</option><option value="CAMPILLO DE ARENAS">CAMPILLO DE ARENAS</option><option value="CAMPILLOS">CAMPILLOS</option><option value="CAMPLLONG">CAMPLLONG</option><option value="CANILES">CANILES</option><option value="CANJÁYAR">CANJÁYAR</option><option value="CANTILLANA">CANTILLANA</option><option value="CANTORIA">CANTORIA</option><option value="CAÑADA ROSAL">CAÑADA ROSAL</option><option value="CÁÑAR">CÁÑAR</option><option value="CAÑETE DE LAS TORRES">CAÑETE DE LAS TORRES</option><option value="CAÑETE LA REAL">CAÑETE LA REAL</option><option value="CARAVACA DE LA CRUZ">CARAVACA DE LA CRUZ</option><option value="CARBONERAS">CARBONERAS</option><option value="CARCABUEY">CARCABUEY</option><option value="CÁRCHELES">CÁRCHELES</option><option value="CARLOTA, LA">CARLOTA, LA</option><option value="CARMONA">CARMONA</option><option value="CAROLINA, LA">CAROLINA, LA</option><option value="CARPIO, EL">CARPIO, EL</option><option value="CÁRTAMA">CÁRTAMA</option><option value="CARTAYA">CARTAYA</option><option value="CASARABONELA">CASARABONELA</option><option value="CASARES">CASARES</option><option value="CASARICHE">CASARICHE</option><option value="CASPE">CASPE</option><option value="CASTELLAR DE LA FRONTERA">CASTELLAR DE LA FRONTERA</option><option value="CASTELLÓN DE LA PLANA">CASTELLÓN DE LA PLANA</option><option value="CASTILLEJA DE LA CUESTA">CASTILLEJA DE LA CUESTA</option><option value="CASTILLO DE LOCUBÍN">CASTILLO DE LOCUBÍN</option><option value="CASTRIL">CASTRIL</option><option value="CASTRO DEL RÍO">CASTRO DEL RÍO</option><option value="CAZALLA DE LA SIERRA">CAZALLA DE LA SIERRA</option><option value="CAZORLA">CAZORLA</option><option value="CENES DE LA VEGA">CENES DE LA VEGA</option><option value="CHAUCHINA">CHAUCHINA</option><option value="CHICLANA DE LA FRONTERA">CHICLANA DE LA FRONTERA</option><option value="CHICLANA DE SEGURA">CHICLANA DE SEGURA</option><option value="CHIPIONA">CHIPIONA</option><option value="CHIRIVEL">CHIRIVEL</option><option value="CHUCENA">CHUCENA</option><option value="CHURRIANA DE LA VEGA">CHURRIANA DE LA VEGA</option><option value="CIJUELA">CIJUELA</option><option value="CIUDAD REAL">CIUDAD REAL</option><option value="CIUDAD RODRIGO">CIUDAD RODRIGO</option><option value="COGOLLOS DE GUADIX">COGOLLOS DE GUADIX</option><option value="COÍN">COÍN</option><option value="COLMENAR">COLMENAR</option><option value="CONIL DE LA FRONTERA">CONIL DE LA FRONTERA</option><option value="CONSTANTINA">CONSTANTINA</option><option value="CÓRDOBA">CÓRDOBA</option><option value="CORIA">CORIA</option><option value="CORIA DEL RÍO">CORIA DEL RÍO</option><option value="CORNELLÀ DE LLOBREGAT">CORNELLÀ DE LLOBREGAT</option><option value="CORRALES, LOS">CORRALES, LOS</option><option value="CORTEGANA">CORTEGANA</option><option value="CORTES Y GRAENA">CORTES Y GRAENA</option><option value="CORUÑA, A">CORUÑA, A</option><option value="CORVERA DE ASTURIAS">CORVERA DE ASTURIAS</option><option value="COSLADA">COSLADA</option><option value="CUENCA">CUENCA</option><option value="CUERVO DE SEVILLA, EL">CUERVO DE SEVILLA, EL</option><option value="CUEVAS BAJAS">CUEVAS BAJAS</option><option value="CUEVAS DE SAN MARCOS">CUEVAS DE SAN MARCOS</option><option value="CUEVAS DEL ALMANZORA">CUEVAS DEL ALMANZORA</option><option value="CUEVAS DEL CAMPO">CUEVAS DEL CAMPO</option><option value="CÚLLAR">CÚLLAR</option><option value="CÚLLAR VEGA">CÚLLAR VEGA</option><option value="CUMBRES DE SAN BARTOLOMÉ">CUMBRES DE SAN BARTOLOMÉ</option><option value="CUMBRES MAYORES">CUMBRES MAYORES</option><option value="DARRO">DARRO</option><option value="DÍLAR">DÍLAR</option><option value="DON BENITO">DON BENITO</option><option value="DOÑA MENCÍA">DOÑA MENCÍA</option><option value="DOS HERMANAS">DOS HERMANAS</option><option value="DOS TORRES">DOS TORRES</option><option value="DÚRCAL">DÚRCAL</option><option value="ÉCIJA">ÉCIJA</option><option value="EJIDO, EL">EJIDO, EL</option><option value="ELCHE/ELX">ELCHE/ELX</option><option value="ENCINASOLA">ENCINASOLA</option><option value="ESCACENA DEL CAMPO">ESCACENA DEL CAMPO</option><option value="ESPARTINAS">ESPARTINAS</option><option value="ESPEJO">ESPEJO</option><option value="ESPIEL">ESPIEL</option><option value="ESTEPA">ESTEPA</option><option value="ESTEPONA">ESTEPONA</option><option value="FERNÁN-NÚÑEZ">FERNÁN-NÚÑEZ</option><option value="FINES">FINES</option><option value="FONDÓN">FONDÓN</option><option value="FORTUNA">FORTUNA</option><option value="FRAILES">FRAILES</option><option value="FREGENAL DE LA SIERRA">FREGENAL DE LA SIERRA</option><option value="FUENGIROLA">FUENGIROLA</option><option value="FUENSANTA DE MARTOS">FUENSANTA DE MARTOS</option><option value="FUENTE DE CANTOS">FUENTE DE CANTOS</option><option value="FUENTE OBEJUNA">FUENTE OBEJUNA</option><option value="FUENTE PALMERA">FUENTE PALMERA</option><option value="FUENTE VAQUEROS">FUENTE VAQUEROS</option><option value="FUENTES DE ANDALUCÍA">FUENTES DE ANDALUCÍA</option><option value="FUENTE-TÓJAR">FUENTE-TÓJAR</option><option value="GABIAS, LAS">GABIAS, LAS</option><option value="GÁDOR">GÁDOR</option><option value="GALAROZA">GALAROZA</option><option value="GALERA">GALERA</option><option value="GALLARDOS, LOS">GALLARDOS, LOS</option><option value="GAUCÍN">GAUCÍN</option><option value="GELVES">GELVES</option><option value="GERENA">GERENA</option><option value="GETAFE">GETAFE</option><option value="GETXO">GETXO</option><option value="GIBRALEÓN">GIBRALEÓN</option><option value="GILENA">GILENA</option><option value="GINES">GINES</option><option value="GÓJAR">GÓJAR</option><option value="GRANADA">GRANADA</option><option value="GRANOLLERS">GRANOLLERS</option><option value="GUADALAJARA">GUADALAJARA</option><option value="GUADALCANAL">GUADALCANAL</option><option value="GUADALCÁZAR">GUADALCÁZAR</option><option value="GUADIX">GUADIX</option><option value="GUARDIA DE JAÉN, LA">GUARDIA DE JAÉN, LA</option><option value="GUARO">GUARO</option><option value="GÜEJAR SIERRA">GÜEJAR SIERRA</option><option value="GUIJO, EL">GUIJO, EL</option><option value="GUILLENA">GUILLENA</option><option value="HERRERA">HERRERA</option><option value="HIGUERA LA REAL">HIGUERA LA REAL</option><option value="HINOJOSA DEL DUQUE">HINOJOSA DEL DUQUE</option><option value="HORNACHUELOS">HORNACHUELOS</option><option value="HOSPITALET DE LLOBREGAT, L'">HOSPITALET DE LLOBREGAT, L'</option><option value="HUÉCIJA">HUÉCIJA</option><option value="HUELMA">HUELMA</option><option value="HUELVA">HUELVA</option><option value="HUÉRCAL DE ALMERÍA">HUÉRCAL DE ALMERÍA</option><option value="HUÉRCAL-OVERA">HUÉRCAL-OVERA</option><option value="HUESA">HUESA</option><option value="HUÉSCAR">HUÉSCAR</option><option value="HUÉTOR DE SANTILLÁN">HUÉTOR DE SANTILLÁN</option><option value="HUÉTOR TÁJAR">HUÉTOR TÁJAR</option><option value="HUÉTOR VEGA">HUÉTOR VEGA</option><option value="HUMILLADERO">HUMILLADERO</option><option value="IBROS">IBROS</option><option value="ILLORA">ILLORA</option><option value="INCA">INCA</option><option value="ISLA CRISTINA">ISLA CRISTINA</option><option value="ISLA MAYOR">ISLA MAYOR</option><option value="IZNALLOZ">IZNALLOZ</option><option value="JABALQUINTO">JABALQUINTO</option><option value="JABUGO">JABUGO</option><option value="JAÉN">JAÉN</option><option value="JAMILENA">JAMILENA</option><option value="JAYENA">JAYENA</option><option value="JEREZ DE LA FRONTERA">JEREZ DE LA FRONTERA</option><option value="JEREZ DEL MARQUESADO">JEREZ DEL MARQUESADO</option><option value="JIMERA DE LÍBAR">JIMERA DE LÍBAR</option><option value="JÓDAR">JÓDAR</option><option value="JUN">JUN</option><option value="LÁCHAR">LÁCHAR</option><option value="LAHIGUERA">LAHIGUERA</option><option value="LANJARÓN">LANJARÓN</option><option value="LANTEJUELA, LA">LANTEJUELA, LA</option><option value="LÁUJAR DE ANDARAX">LÁUJAR DE ANDARAX</option><option value="LEBRIJA">LEBRIJA</option><option value="LECRÍN">LECRÍN</option><option value="LEPE">LEPE</option><option value="LINARES">LINARES</option><option value="LÍNEA DE LA CONCEPCIÓN, LA">LÍNEA DE LA CONCEPCIÓN, LA</option><option value="LLINARS DEL VALLÈS">LLINARS DEL VALLÈS</option><option value="LOGROÑO">LOGROÑO</option><option value="LOJA">LOJA</option><option value="LOPERA">LOPERA</option><option value="LORA DEL RÍO">LORA DEL RÍO</option><option value="LORCA">LORCA</option><option value="LUBRÍN">LUBRÍN</option><option value="LUCENA">LUCENA</option><option value="LUCENA DEL PUERTO">LUCENA DEL PUERTO</option><option value="LUISIANA, LA">LUISIANA, LA</option><option value="LUQUE">LUQUE</option><option value="MACAEL">MACAEL</option><option value="MADRID">MADRID</option><option value="MAIRENA DEL ALCOR">MAIRENA DEL ALCOR</option><option value="MAIRENA DEL ALJARAFE">MAIRENA DEL ALJARAFE</option><option value="MAJADAHONDA">MAJADAHONDA</option><option value="MÁLAGA">MÁLAGA</option><option value="MALAHÁ, LA">MALAHÁ, LA</option><option value="MANCHA REAL">MANCHA REAL</option><option value="MANILVA">MANILVA</option><option value="MANZANILLA">MANZANILLA</option><option value="MARACENA">MARACENA</option><option value="MARBELLA">MARBELLA</option><option value="MARCHENA">MARCHENA</option><option value="MARÍA">MARÍA</option><option value="MARMOLEJO">MARMOLEJO</option><option value="MARTOS">MARTOS</option><option value="MEDINA DE POMAR">MEDINA DE POMAR</option><option value="MEDINA-SIDONIA">MEDINA-SIDONIA</option><option value="MENGÍBAR">MENGÍBAR</option><option value="MÉRIDA">MÉRIDA</option><option value="MIJAS">MIJAS</option><option value="MISLATA">MISLATA</option><option value="MOCLÍN">MOCLÍN</option><option value="MOGUER">MOGUER</option><option value="MOJÁCAR">MOJÁCAR</option><option value="MOJONERA, LA">MOJONERA, LA</option><option value="MOLARES, LOS">MOLARES, LOS</option><option value="MOLINA DE SEGURA">MOLINA DE SEGURA</option><option value="MOLINS DE REI">MOLINS DE REI</option><option value="MOLLINA">MOLLINA</option><option value="MONACHIL">MONACHIL</option><option value="MONESTERIO">MONESTERIO</option><option value="MONTALBÁN DE CÓRDOBA">MONTALBÁN DE CÓRDOBA</option><option value="MONTCADA I REIXAC">MONTCADA I REIXAC</option><option value="MONTELLANO">MONTELLANO</option><option value="MONTEMAYOR">MONTEMAYOR</option><option value="MONTILLA">MONTILLA</option><option value="MONTORO">MONTORO</option><option value="MONTURQUE">MONTURQUE</option><option value="MORALEDA DE ZAFAYONA">MORALEDA DE ZAFAYONA</option><option value="MORALEJA">MORALEJA</option><option value="MORELÁBOR">MORELÁBOR</option><option value="MORELL, EL">MORELL, EL</option><option value="MORILES">MORILES</option><option value="MORÓN DE LA FRONTERA">MORÓN DE LA FRONTERA</option><option value="MOTRIL">MOTRIL</option><option value="MURCIA">MURCIA</option><option value="NAVALVILLAR DE PELA">NAVALVILLAR DE PELA</option><option value="NAVAS DE LA CONCEPCIÓN, LAS">NAVAS DE LA CONCEPCIÓN, LAS</option><option value="NERJA">NERJA</option><option value="NERVA">NERVA</option><option value="NEVADA">NEVADA</option><option value="NIEBLA">NIEBLA</option><option value="NIGÜELAS">NIGÜELAS</option><option value="NÍJAR">NÍJAR</option><option value="NUCIA, LA">NUCIA, LA</option><option value="NUEVA CARTEYA">NUEVA CARTEYA</option><option value="OGÍJARES">OGÍJARES</option><option value="OJÉN">OJÉN</option><option value="OLEIROS">OLEIROS</option><option value="OLITE/ERRIBERRI">OLITE/ERRIBERRI</option><option value="OLIVA, LA">OLIVA, LA</option><option value="OLIVARES">OLIVARES</option><option value="OLULA DEL RÍO">OLULA DEL RÍO</option><option value="OLVERA">OLVERA</option><option value="ONTINYENT">ONTINYENT</option><option value="OÑATI">OÑATI</option><option value="ORCE">ORCE</option><option value="ORCERA">ORCERA</option><option value="ÓRGIVA">ÓRGIVA</option><option value="OSUNA">OSUNA</option><option value="OTURA">OTURA</option><option value="OVIEDO">OVIEDO</option><option value="PADUL">PADUL</option><option value="PALACIOS Y VILLAFRANCA, LOS">PALACIOS Y VILLAFRANCA, LOS</option><option value="PALLEJÀ">PALLEJÀ</option><option value="PALMA DEL CONDADO, LA">PALMA DEL CONDADO, LA</option><option value="PALMA DEL RÍO">PALMA DEL RÍO</option><option value="PALOMARES DEL RÍO">PALOMARES DEL RÍO</option><option value="PALOS DE LA FRONTERA">PALOS DE LA FRONTERA</option><option value="PANTÓN">PANTÓN</option><option value="PARADAS">PARADAS</option><option value="PARETS DEL VALLÈS">PARETS DEL VALLÈS</option><option value="PARLA">PARLA</option><option value="PATERNA">PATERNA</option><option value="PAYMOGO">PAYMOGO</option><option value="PEAL DE BECERRO">PEAL DE BECERRO</option><option value="PEDREGUER">PEDREGUER</option><option value="PEDRERA">PEDRERA</option><option value="PEDRO ABAD">PEDRO ABAD</option><option value="PEDROCHE">PEDROCHE</option><option value="PEDROSO, EL">PEDROSO, EL</option><option value="PEGALAJAR">PEGALAJAR</option><option value="PELIGROS">PELIGROS</option><option value="PEÑAFLOR">PEÑAFLOR</option><option value="PEÑARROYA-PUEBLONUEVO">PEÑARROYA-PUEBLONUEVO</option><option value="PEPINO">PEPINO</option><option value="PEZA, LA">PEZA, LA</option><option value="PILAS">PILAS</option><option value="PINOS GENIL">PINOS GENIL</option><option value="PINOS PUENTE">PINOS PUENTE</option><option value="PÍÑAR">PÍÑAR</option><option value="PIZARRA">PIZARRA</option><option value="PLASENCIA">PLASENCIA</option><option value="PONTEVEDRA">PONTEVEDRA</option><option value="PORCUNA">PORCUNA</option><option value="POSADAS">POSADAS</option><option value="POZO ALCÓN">POZO ALCÓN</option><option value="POZOBLANCO">POZOBLANCO</option><option value="PRADO DEL REY">PRADO DEL REY</option><option value="PRIEGO DE CÓRDOBA">PRIEGO DE CÓRDOBA</option><option value="PRUNA">PRUNA</option><option value="PUEBLA DE CAZALLA, LA">PUEBLA DE CAZALLA, LA</option><option value="PUEBLA DE DON FADRIQUE">PUEBLA DE DON FADRIQUE</option><option value="PUEBLA DE GUZMÁN">PUEBLA DE GUZMÁN</option><option value="PUEBLA DE LOS INFANTES, LA">PUEBLA DE LOS INFANTES, LA</option><option value="PUEBLA DEL RÍO, LA">PUEBLA DEL RÍO, LA</option><option value="PUENTE DE GÉNAVE">PUENTE DE GÉNAVE</option><option value="PUENTE GENIL">PUENTE GENIL</option><option value="PUERTA DE SEGURA, LA">PUERTA DE SEGURA, LA</option><option value="PUERTO DE SANTA MARÍA, EL">PUERTO DE SANTA MARÍA, EL</option><option value="PUERTO LUMBRERAS">PUERTO LUMBRERAS</option><option value="PUERTO REAL">PUERTO REAL</option><option value="PUERTO SERRANO">PUERTO SERRANO</option><option value="PULIANAS">PULIANAS</option><option value="PULPÍ">PULPÍ</option><option value="PUNTA UMBRÍA">PUNTA UMBRÍA</option><option value="PURCHENA">PURCHENA</option><option value="QUART DE POBLET">QUART DE POBLET</option><option value="QUESADA">QUESADA</option><option value="RAMBLA, LA">RAMBLA, LA</option><option value="REAL DE LA JARA, EL">REAL DE LA JARA, EL</option><option value="REAL SITIO DE SAN ILDEFONSO">REAL SITIO DE SAN ILDEFONSO</option><option value="REDONDELA">REDONDELA</option><option value="REUS">REUS</option><option value="RINCÓN DE LA VICTORIA">RINCÓN DE LA VICTORIA</option><option value="RINCONADA, LA">RINCONADA, LA</option><option value="RIOGORDO">RIOGORDO</option><option value="RIPOLLET">RIPOLLET</option><option value="ROCIANA DEL CONDADO">ROCIANA DEL CONDADO</option><option value="RODA DE ANDALUCÍA, LA">RODA DE ANDALUCÍA, LA</option><option value="RONDA">RONDA</option><option value="RONQUILLO, EL">RONQUILLO, EL</option><option value="ROQUETAS DE MAR">ROQUETAS DE MAR</option><option value="ROTA">ROTA</option><option value="ROZAS DE MADRID, LAS">ROZAS DE MADRID, LAS</option><option value="RUBIO, EL">RUBIO, EL</option><option value="RUTE">RUTE</option><option value="SABIOTE">SABIOTE</option><option value="SALAR">SALAR</option><option value="SALOBREÑA">SALOBREÑA</option><option value="SALTERAS">SALTERAS</option><option value="SALVATERRA DE MIÑO">SALVATERRA DE MIÑO</option><option value="SAN BARTOLOMÉ DE LA TORRE">SAN BARTOLOMÉ DE LA TORRE</option><option value="SAN FERNANDO">SAN FERNANDO</option><option value="SAN FERNANDO DE HENARES">SAN FERNANDO DE HENARES</option><option value="SAN JUAN DE AZNALFARACHE">SAN JUAN DE AZNALFARACHE</option><option value="SAN JUAN DEL PUERTO">SAN JUAN DEL PUERTO</option><option value="SAN NICOLÁS DEL PUERTO">SAN NICOLÁS DEL PUERTO</option><option value="SAN ROQUE">SAN ROQUE</option><option value="SANLÚCAR DE BARRAMEDA">SANLÚCAR DE BARRAMEDA</option><option value="SANLÚCAR LA MAYOR">SANLÚCAR LA MAYOR</option><option value="SANT ANDREU DE LLAVANERES">SANT ANDREU DE LLAVANERES</option><option value="SANT CUGAT DEL VALLÈS">SANT CUGAT DEL VALLÈS</option><option value="SANT JUST DESVERN">SANT JUST DESVERN</option><option value="SANTA FE">SANTA FE</option><option value="SANTA OLALLA DEL CALA">SANTA OLALLA DEL CALA</option><option value="SANTAELLA">SANTAELLA</option><option value="SANTANDER">SANTANDER</option><option value="SANTIAGO DE COMPOSTELA">SANTIAGO DE COMPOSTELA</option><option value="SANTIAGO-PONTONES">SANTIAGO-PONTONES</option><option value="SANTIPONCE">SANTIPONCE</option><option value="SANTISTEBAN DEL PUERTO">SANTISTEBAN DEL PUERTO</option><option value="SANTO TOMÉ">SANTO TOMÉ</option><option value="SANTOS DE MAIMONA, LOS">SANTOS DE MAIMONA, LOS</option><option value="SANXENXO">SANXENXO</option><option value="SAUCEJO, EL">SAUCEJO, EL</option><option value="SEDELLA">SEDELLA</option><option value="SEGORBE">SEGORBE</option><option value="SEGURA DE LA SIERRA">SEGURA DE LA SIERRA</option><option value="SENÉS">SENÉS</option><option value="SERÓN">SERÓN</option><option value="SESEÑA">SESEÑA</option><option value="SETENIL DE LAS BODEGAS">SETENIL DE LAS BODEGAS</option><option value="SEVILLA">SEVILLA</option><option value="SIERRA DE YEGUAS">SIERRA DE YEGUAS</option><option value="SILES">SILES</option><option value="SOPORTÚJAR">SOPORTÚJAR</option><option value="SOUTOMAIOR">SOUTOMAIOR</option><option value="TABERNAS">TABERNAS</option><option value="TALAVERA DE LA REINA">TALAVERA DE LA REINA</option><option value="TALAYUELA">TALAYUELA</option><option value="TARIFA">TARIFA</option><option value="TARRAGONA">TARRAGONA</option><option value="TEBA">TEBA</option><option value="TELDE">TELDE</option><option value="TERRASSA">TERRASSA</option><option value="TÍJOLA">TÍJOLA</option><option value="TOCINA">TOCINA</option><option value="TOMARES">TOMARES</option><option value="TOMELLOSO">TOMELLOSO</option><option value="TORRE DEL CAMPO">TORRE DEL CAMPO</option><option value="TORREBLASCOPEDRO">TORREBLASCOPEDRO</option><option value="TORREDONJIMENO">TORREDONJIMENO</option><option value="TORREJÓN DE ARDOZ">TORREJÓN DE ARDOZ</option><option value="TORRELAVEGA">TORRELAVEGA</option><option value="TORREMOLINOS">TORREMOLINOS</option><option value="TORREPEROGIL">TORREPEROGIL</option><option value="TORRES">TORRES</option><option value="TREBUJENA">TREBUJENA</option><option value="TRES CANTOS">TRES CANTOS</option><option value="TRIGUEROS">TRIGUEROS</option><option value="TUDELA">TUDELA</option><option value="TURRE">TURRE</option><option value="ÚBEDA">ÚBEDA</option><option value="UBRIQUE">UBRIQUE</option><option value="UGÍJAR">UGÍJAR</option><option value="ULEILA DEL CAMPO">ULEILA DEL CAMPO</option><option value="UMBRETE">UMBRETE</option><option value="UTRERA">UTRERA</option><option value="VALDEMORILLO">VALDEMORILLO</option><option value="VALDEMORO">VALDEMORO</option><option value="VALDEPEÑAS">VALDEPEÑAS</option><option value="VALDEPEÑAS DE JAÉN">VALDEPEÑAS DE JAÉN</option><option value="VALENCIA">VALENCIA</option><option value="VALENCINA DE LA CONCEPCIÓN">VALENCINA DE LA CONCEPCIÓN</option><option value="VALL D'UIXÓ, LA">VALL D'UIXÓ, LA</option><option value="VALLADOLID">VALLADOLID</option><option value="VALLE DEL ZALABÍ">VALLE DEL ZALABÍ</option><option value="VÁLOR">VÁLOR</option><option value="VALVERDE DEL CAMINO">VALVERDE DEL CAMINO</option><option value="VEGAS DEL GENIL">VEGAS DEL GENIL</option><option value="VEJER DE LA FRONTERA">VEJER DE LA FRONTERA</option><option value="VÉLEZ DE BENAUDALLA">VÉLEZ DE BENAUDALLA</option><option value="VÉLEZ-BLANCO">VÉLEZ-BLANCO</option><option value="VÉLEZ-MÁLAGA">VÉLEZ-MÁLAGA</option><option value="VÉLEZ-RUBIO">VÉLEZ-RUBIO</option><option value="VERA">VERA</option><option value="VIATOR">VIATOR</option><option value="VÍCAR">VÍCAR</option><option value="VICTORIA, LA">VICTORIA, LA</option><option value="VIGO">VIGO</option><option value="VILA-REAL">VILA-REAL</option><option value="VILCHES">VILCHES</option><option value="VILLA DEL RÍO">VILLA DEL RÍO</option><option value="VILLACARRILLO">VILLACARRILLO</option><option value="VILLAFRANCA DE CÓRDOBA">VILLAFRANCA DE CÓRDOBA</option><option value="VILLALBA DEL ALCOR">VILLALBA DEL ALCOR</option><option value="VILLAMANRIQUE DE LA CONDESA">VILLAMANRIQUE DE LA CONDESA</option><option value="VILLAMARTÍN">VILLAMARTÍN</option><option value="VILLAMENA">VILLAMENA</option><option value="VILLANUEVA DE ALGAIDAS">VILLANUEVA DE ALGAIDAS</option><option value="VILLANUEVA DE CÓRDOBA">VILLANUEVA DE CÓRDOBA</option><option value="VILLANUEVA DE LA CAÑADA">VILLANUEVA DE LA CAÑADA</option><option value="VILLANUEVA DE LA CONCEPCIÓN">VILLANUEVA DE LA CONCEPCIÓN</option><option value="VILLANUEVA DE LA REINA">VILLANUEVA DE LA REINA</option><option value="VILLANUEVA DE LOS CASTILLEJOS">VILLANUEVA DE LOS CASTILLEJOS</option><option value="VILLANUEVA DEL ARISCAL">VILLANUEVA DEL ARISCAL</option><option value="VILLANUEVA DEL ARZOBISPO">VILLANUEVA DEL ARZOBISPO</option><option value="VILLANUEVA DEL RÍO Y MINAS">VILLANUEVA DEL RÍO Y MINAS</option><option value="VILLANUEVA DEL ROSARIO">VILLANUEVA DEL ROSARIO</option><option value="VILLANUEVA DEL TRABUCO">VILLANUEVA DEL TRABUCO</option><option value="VILLANUEVA MESÍA">VILLANUEVA MESÍA</option><option value="VILLARES, LOS">VILLARES, LOS</option><option value="VILLARRUBIA DE SANTIAGO">VILLARRUBIA DE SANTIAGO</option><option value="VILLATORRES">VILLATORRES</option><option value="VILLAVERDE DEL RÍO">VILLAVERDE DEL RÍO</option><option value="VILLAVICIOSA DE CÓRDOBA">VILLAVICIOSA DE CÓRDOBA</option><option value="VIÑUELA">VIÑUELA</option><option value="VISO DEL ALCOR, EL">VISO DEL ALCOR, EL</option><option value="VISO, EL">VISO, EL</option><option value="VITORIA-GASTEIZ">VITORIA-GASTEIZ</option><option value="VÍZNAR">VÍZNAR</option><option value="YUNCOS">YUNCOS</option><option value="YUNQUERA">YUNQUERA</option><option value="ZALAMEA LA REAL">ZALAMEA LA REAL</option><option value="ZARAGOZA">ZARAGOZA</option><option value="ZUBIA, LA">ZUBIA, LA</option><option value="ZÚJAR">ZÚJAR</option><option value="ZURGENA">ZURGENA</option>
+</select>
+</div>
+</td>
+<td align="center" width="200px">Actuaciones incentivables habilitadas:</td>
+<td align="right" width="200px">
+<div id="div_Act2"><select style="width: 200px;" id="ACT" name="ACT">
+
+
+<option value="">--Selecciona Actuación--</option><option value="01PS">01PS-a)&nbsp;Mejora energética de instalaciones de energías renovables existentes</option><option value="02PS">02PS-b)&nbsp;Nuevos sistemas de energías renovables </option><option value="03PS">03PS-c)&nbsp;Grandes sistemas solares térmicos para procesos</option><option value="04PS">04PS-d)&nbsp;Soluciones avanzadas para la generación energética con energías renovables</option><option value="05PS">05PS-a)&nbsp;Actuaciones o proyectos de producción o logística de biomasa</option><option value="06PS">06PS-b)&nbsp;Actuaciones o proyectos de producción o logística de biomasa arbórea o herbácea</option><option value="07PS">07PS-c)&nbsp;Soluciones integrales para producción, distribución y logística de la biomasa o fabricación de biocarburantes</option><option value="08PS">08PS-a)&nbsp;Incorporación de equipos que permitan el aprovechamiento de energías residuales</option><option value="09PS">09PS-b) Rediseño de procesos que permitan el aprovechamiento de energías residuales </option><option value="10PS">10PS-a) Renovación de equipos e instalaciones para mayor eficiencia energética</option><option value="11PS">11PS-b)&nbsp;Mejora energética de los procesos</option><option value="12PS">12PS-c) Soluciones avanzadas para la reforma de instalaciones o procesos</option><option value="13PS">13PS-a)&nbsp;Renovación de cogeneraciones existentes</option><option value="14PS">14PS-b) Implantación de nueva cogeneración</option><option value="15PS">15PS-a)&nbsp;Renovación de equipos e instalaciones para la sustitución de combustibles o energías tradicionales</option><option value="16PS">16PS-b) Soluciones avanzadas para la sustitución de combustibles o energías tradicionales</option><option value="17PS">17PS-a)&nbsp;Elementos de contabilización y seguimiento</option><option value="18PS">18PS-b) Implantación de sistemas de gestión energética de flotas de transporte</option><option value="19PS">19PS-c)  Implantación de sistemas de gestión energética</option><option value="20PS">20PS-d) Evaluación energética comparada de la eficiencia energética</option><option value="21PS">21PS-a)&nbsp;&nbsp;Medidas de mejora energética</option><option value="22PS">22PS-b)  Actuaciones avanzadas de mejora energética</option></select></div>
+</td>
+</tr>
+</tbody></table>
+</center>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" value="Filtrar" id="filt">&nbsp;
+<input type="button" value="Limpiar filtro" onclick="window.location.reload(true);">&nbsp;
+<!--<input type="button" name ="exportar" value="Excel" id="exportar">-->
+<!-- <input type="hidden" name="accion" value="consulta"> -->
+<!-- <input type="hidden" name="ACCION" value="EXPORTAR"> -->
+<hr>
+</form>
+</div>
+<center>
+
+
+<div id="lTab" "="">
+<div id="lAtAbla_wrapper" class="dataTables_wrapper no-footer"><div class="dataTables_length" id="lAtAbla_length"><label>Mostrar <select name="lAtAbla_length" aria-controls="lAtAbla" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> registros por página</label></div><div id="lAtAbla_filter" class="dataTables_filter"><label>Búsqueda:<input type="search" class="" placeholder="" aria-controls="lAtAbla"></label></div><table id="lAtAbla" class="display compact no-footer dataTable" cellspacing="0" width="100%" style="font-size: 80%; width: 100%;" role="grid" aria-describedby="lAtAbla_info">
+<thead>
+<tr role="row"><td align="center" class="sorting_asc" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="FECHAINSCRIPCIÓN: activate to sort column descending" style="width: 81px;" aria-sort="ascending">FECHA<br>INSCRIPCIÓN</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="CÓDIGOIDENTIFICATIVO: activate to sort column ascending" style="width: 101px;">CÓDIGO<br>IDENTIFICATIVO</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="RAZÓNSOCIAL: activate to sort column ascending" style="width: 92px;">RAZÓN<br>SOCIAL</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="NOMBRECOMERCIAL: activate to sort column ascending" style="width: 95px;">NOMBRE<br>COMERCIAL</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="DOMICILIO SOCIAL: activate to sort column ascending" style="width: 76px;">DOMICILIO SOCIAL</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="TELÉFONO: activate to sort column ascending" style="width: 66px;">TELÉFONO</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="FAX: activate to sort column ascending" style="width: 50px;">FAX</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="CORREOELECTRÓNICO: activate to sort column ascending" style="width: 323px;">CORREO<br>ELECTRÓNICO</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="PÁGINA WEB: activate to sort column ascending" style="width: 466px;">PÁGINA WEB</td><td align="center" class="sorting" tabindex="0" aria-controls="lAtAbla" rowspan="1" colspan="1" aria-label="INFORMACIÓNADICIONAL: activate to sort column ascending" style="width: 90px;">INFORMACIÓN<br>ADICIONAL</td></tr>
+</thead>
+<tbody id="cuerpo">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tr role="row" class="odd"><td align="center" class="sorting_1">30/03/2017</td><td align="center">1576</td><td align="center">JUAN PEDRO CEPAS CAMACHO</td><td align="center">JUAN PEDRO CEPAS CAMACHO</td><td align="center">CALLE DOS DE MAYO Nº 12, 14440, VILLANUEVA DE CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">627557858</td><td>CEYPOLUZ@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1576','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">30/04/2018</td><td align="center">4035</td><td align="center">DODICA SC</td><td align="center">CONSTRUCCIONES DODICA, S.C.</td><td align="center">CALLE AMADEO VIVES Nº 2 PORTAL BJ, 14700, PALMA DEL RÍO, CÓRDOBA</td><td align="center">687453483</td><td align="center">-</td><td>CTSDODICA@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4035','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">30/05/2018</td><td align="center">4241</td><td align="center">CARPINTERIA METALICA HERMANOS AGUILAR SL</td><td align="center">CARPINTERIA METALICA HNOS AGUILAR SL</td><td align="center">CALLE INGENIERO JUAN DE LA CIERVA Nº 36, 14100, CARLOTA, LA, CÓRDOBA</td><td align="center">957300037</td><td align="center">957300037</td><td>TALLERESAGUILAR@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4241','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">30/07/2020</td><td align="center">5729</td><td align="center">SOLUCIONES GLOBALES DE EFICIENCIA, CULTURA Y ECOLOGIA SL</td><td align="center">EFISTAR </td><td align="center">AVENIDA DE LA INFANCIA  Nº 21, 14900, LUCENA, CÓRDOBA</td><td align="center">636952820</td><td align="center">-</td><td>MCMARIN@EFISTAR.COM</td><td align="center">WWW.EFISTAR.COM </td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5729','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">30/08/2017</td><td align="center">3356</td><td align="center">JOSE LEONCIO OSUNA SANCHEZ</td><td align="center">JOSE LEONCIO OSUNA SANCHEZ</td><td align="center">URBANIZACION LOS TEJARES Nº 13, 14650, BUJALANCE, CÓRDOBA</td><td align="center">600412055</td><td align="center">957171611</td><td>JOSELEONCIO@TELEFONICA.NET</td><td align="center">NO</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3356','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">30/09/2019</td><td align="center">5248</td><td align="center">CARLOS JEREZ RECHE</td><td align="center">ALCAR INSTALACIONES ELECTRICAS</td><td align="center">CALLE NUEVA Nº 28, 14610, CÓRDOBA, CÓRDOBA</td><td align="center">608158197</td><td align="center">-</td><td>ASEFISCO@ASEFISCO.ES</td><td align="center">WWW.ALCARINSTALACIONES.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5248','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">30/09/2019</td><td align="center">5212</td><td align="center">JOSE CASTRO E HIJOS CB</td><td align="center">PINTURAS JOSE CASTRO E HIJOS</td><td align="center">CALLE LA JARA Nº 85, 14700, PALMA DEL RÍO, CÓRDOBA</td><td align="center">610466277</td><td align="center">-</td><td>PINTURASJOSECASTROEHIJOS@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=5212','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">30/10/2018</td><td align="center">4658</td><td align="center">SOLUCIONES INTEGRALES PARA LA CONSTRUCCION DECORACION E INTERIORISMO SL</td><td align="center">-</td><td align="center">CALLE MORAL Nº 55 PUERTA 6, 14420, VILLAFRANCA DE CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">628174980</td><td>SONNOINTEGRAL@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4658','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/01/2017</td><td align="center">239</td><td align="center">JUAN MARTIN MARIN ROMERO</td><td align="center">ELECTRICIDAD MARIN</td><td align="center">CALLE ANGOSTA Nº 14, 14440, VILLANUEVA DE CÓRDOBA, CÓRDOBA</td><td align="center">957120296</td><td align="center">957121984</td><td>ELECTRICIDAD_MARIN@WANADOO.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=239','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/01/2017</td><td align="center">241</td><td align="center">JUAN AGUILERA TIRADO</td><td align="center">JUAN AGUILERA TIRADO</td><td align="center">CALLE FUENTE DEL MORAL Nº 87, 14960, RUTE, CÓRDOBA</td><td align="center">957538156</td><td align="center">957538156</td><td>PUERTAS.RUTE@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=241','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/01/2017</td><td align="center">178</td><td align="center">NAVARRO SOLAR, S.L.</td><td align="center">NAVARRO SOLAR, S.L.</td><td align="center">CALLE SAN JUAN BOSCO Nº 7, 14400, POZOBLANCO, CÓRDOBA</td><td align="center">957770925</td><td align="center">957773038</td><td>NAVARRO@NAVARROSOLAR.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=178','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/01/2017</td><td align="center">151</td><td align="center">TARIZU SL.</td><td align="center">TARIZU SL. </td><td align="center">AVENIDA CONSTITUCION  Nº 7 PORTAL BA, 14660, CAÑETE DE LAS TORRES, CÓRDOBA</td><td align="center">620430356</td><td align="center">957184163</td><td>TARIZUFON@HOTMAIL.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=151','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/03/2017</td><td align="center">1434</td><td align="center">CONSTRUCCIONES METALICAS CHUMILLA SL</td><td align="center">CONSTRUCCIONES METÁLICAS CHUMILLA S.L.</td><td align="center">CARRETERA CRTA.: A-339 CABRA-ALCALÁ LA REAL  KM.: 18,5 KM KM 18, 14810, CARCABUEY, CÓRDOBA</td><td align="center">957553325</td><td align="center">-</td><td>RAFAEL@GRUPOCHUMILLA.COM</td><td align="center">HTTP://WWW.MONTACARGASSANSON.COM/</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1434','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/03/2017</td><td align="center">1612</td><td align="center">ELECTRICIDAD ALCALA ZAMORA SL</td><td align="center">ELECTRICIDAD ALCALA-ZAMORA</td><td align="center">CALLE CAVA Nº 25, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">957541324</td><td>EAZPRIEGO@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1612','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/03/2017</td><td align="center">1644</td><td align="center">MIGUEL GARCIA DE CONSUEGRA RANCHAL</td><td align="center">MIGUEL GARCIA DE CONSUEGRA RANCHAL</td><td align="center">CALLE SAN ISIDRO  Nº 36 PLANTA 3 PUERTA A, 14400, POZOBLANCO, CÓRDOBA</td><td align="center">-</td><td align="center">620432699</td><td>MIGUELGCRANCHAL@GMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1644','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/03/2017</td><td align="center">1609</td><td align="center">OBRAS MEDINA BAHIGA SL</td><td align="center">OBRAS MEDINA BAHIGA</td><td align="center">CALLE CRISTO REY Nº 16, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">686482598</td><td>MEDINABAHIGA@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1609','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/03/2017</td><td align="center">1580</td><td align="center">TOLDOS CASTRO MERINO SL</td><td align="center">TOLDOS CASTRO MERINO SL</td><td align="center">CALLE RONDA DE LOS LLANOS Nº 16, 14400, POZOBLANCO, CÓRDOBA</td><td align="center">957772467</td><td align="center">957772467</td><td>TOLDOSCASTROMERINO@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1580','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/03/2017</td><td align="center">1583</td><td align="center">AUTOMATISMOS ITEA SL</td><td align="center">-</td><td align="center">CALLE EDISON Nº 146, 14550, MONTILLA, CÓRDOBA</td><td align="center">957656707</td><td align="center">957655804</td><td>ITEA@AUTOMATISMOSITEA.NET</td><td align="center">WWW.AUTOMATISMOSITEA.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=1583','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/05/2017</td><td align="center">2764</td><td align="center">CHIMENEAS PREFABRICADAS LAO SL</td><td align="center">CHIMENEAS PREFABRICADAS LAO, S.L.</td><td align="center">POLIGONO LLANOS DE JARATA, C/ ISAAC PERAL,  Nº 129, 14550, MONTILLA, CÓRDOBA</td><td align="center">957651712</td><td align="center">-</td><td>CHIMENEASLAOSL@CHIMENEASLAO.COM</td><td align="center">WWW.CHIMENEASLAO.COM</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2764','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/05/2017</td><td align="center">2662</td><td align="center">INSTALACIONES SERVICIOS Y COMUNICACIONES CORDOBA SL</td><td align="center">INSERCOM </td><td align="center">CALLE POETA ALFONSO YUSTE (LOCAL) Nº 16 LETRA LO, 14520, FERNÁN-NÚÑEZ, CÓRDOBA</td><td align="center">627510061</td><td align="center">-</td><td>INSERCOMFN@YAHOO.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2662','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/05/2017</td><td align="center">2442</td><td align="center">TOTALCLIMA SUR SL</td><td align="center">TOTALCLIMA</td><td align="center">CALLE ALCALDE VELASCO NAVARRO Nº 6, 14004, CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">957238888</td><td>TOTALCLIMA@TOTALCLIMA.ES</td><td align="center">WWW.TOTALCLIMA.ES</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=2442','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/08/2017</td><td align="center">3350</td><td align="center">GRUPO EMPRESARIAL SOL VALLE  SL</td><td align="center">GRUPO EMPRESARIAL SOL VALLE, S.L.</td><td align="center">POLIGONO DEHESA BOYAL Nº 44, 14400, POZOBLANCO, CÓRDOBA</td><td align="center">-</td><td align="center">957771720</td><td>SOLARDELVALLE@SOLARDELVALLE.ES</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=3350','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="odd"><td align="center" class="sorting_1">31/10/2018</td><td align="center">4635</td><td align="center">AISLAMIENTOS HINOJOSA CB</td><td align="center">AISLAMIENTOS HINOJOSA CB</td><td align="center">PASAJE,PASADIZO SAN SEBASTIAN Nº 2, 14270, MONTALBÁN DE CÓRDOBA, CÓRDOBA</td><td align="center">600523604</td><td align="center">-</td><td>LDIAZ1957@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4635','#Detalle');"><img src="include/img/info.png"></a></center></td></tr><tr role="row" class="even"><td align="center" class="sorting_1">31/10/2018</td><td align="center">4661</td><td align="center">RAFAEL RUIZ SANCHEZ</td><td align="center">RAFAEL RUIZ SANCHEZ</td><td align="center">CALLE CHILE Nº 1 BLOQUE 1 PUERTA 1, 14800, PRIEGO DE CÓRDOBA, CÓRDOBA</td><td align="center">-</td><td align="center">615578277</td><td>R_RUIZ75@HOTMAIL.COM</td><td align="center">-</td><td><center><a href="#" onclick="javascript:cargaDiv('listadoDetalle.jsp?idEmp=4661','#Detalle');"><img src="include/img/info.png"></a></center></td></tr></tbody>
+</table><div class="dataTables_info" id="lAtAbla_info" role="status" aria-live="polite">Mostrando 401 a 424 de 424 registros</div><div class="dataTables_paginate paging_simple_numbers" id="lAtAbla_paginate"><a class="paginate_button previous" aria-controls="lAtAbla" data-dt-idx="0" tabindex="0" id="lAtAbla_previous">Anterior</a><span><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="1" tabindex="0">1</a><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="2" tabindex="0">2</a><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="3" tabindex="0">3</a><a class="paginate_button " aria-controls="lAtAbla" data-dt-idx="4" tabindex="0">4</a><a class="paginate_button current" aria-controls="lAtAbla" data-dt-idx="5" tabindex="0">5</a></span><a class="paginate_button next disabled" aria-controls="lAtAbla" data-dt-idx="6" tabindex="0" id="lAtAbla_next">Siguiente</a></div></div>
+</div>
+Ya puedes <a href="https://incentivos.agenciaandaluzadelaenergia.es/Orden2016SIG/" target="_blank">acceder</a> para <a href="https://www.agenciaandaluzadelaenergia.es/soporteinteractivoOrden/como-ser-entidad-colaboradora/alta-en-localizador-geografico/
+" target="_blank">dar de alta</a> tu entidad colaboradora en el localizador geográfico de entidades colaboradoras.
+</center>
+<!-- 
+<div id="Detalle" style="border-style: solid; border-width: 1px;">
+&Aacute;rea de Detalle
+</div>
+ -->
+ 
+<br>
+<div style="float:right;">
+<script type="text/javascript">
+//<![CDATA[
+var  today = new Date();
+var anno = today.getFullYear();
+var m = today.getMonth() + 1;
+var mes = (m < 10) ? '0' + m : m;
+var h=today.getHours();
+var hora= (h < 10) ? '0' + h : h;
+var min=today.getMinutes();
+var minutos= (min < 10) ? '0' + min : min;
+  document.write('<b>Documento actualizado a:</b> '+today.getDate(),'/' +mes,'/'+anno+"-"+hora+":"+minutos);
+//]]> 
+</script><b>Documento actualizado a:</b> 16/02/2021-12:20</div>
+<br>
+<!-- Pie de página -->
+<hr>
+<table cellpadding="0" cellspacing="0" style="width: 98%"> <!--Tabla de pie de página -->
+<tbody><tr>
+	<td style="width: 50%; text-align: center; padding-left: 150px" class="fondo_pie letra_politica">
+	<img id="cabeceraUE" src="include/img/logoPie.png">
+	</td>
+	<td style="width: 50%; text-align: left;" class="fondo_pie letra_politica">
+	Agencia Andaluza de la Energía - <a href="https://www.agenciaandaluzadelaenergia.es/soporteinteractivoOrden/" style="color: #330000">Resuelve tus dudas</a> - <a href="https://www.agenciaandaluzadelaenergia.es/LOPD" style="color: #330000">LOPD</a>
+	<br>Optimizada para navegadores Google Chrome ó Mozilla Firefox.
+	</td>
+</tr>
+</tbody></table>
+<hr>
+
+
+</body></html>
